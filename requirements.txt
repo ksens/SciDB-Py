@@ -2,7 +2,7 @@ backports.weakref
 enum34
 numpy
 pandas
-pep8
+pycodestyle
 pytest
 requests
 six

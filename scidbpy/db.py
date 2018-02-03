@@ -639,7 +639,7 @@ class Operator(object):
                     try:
                         self.upload_schema = Schema.fromdtype(
                             self.upload_data.dtype)
-                    except:
+                    except Exception:
                         # Might fail if the dtype contains
                         # objects. The same type mapping is attempted
                         # later in iquery, but there the exception is
@@ -652,7 +652,7 @@ class Operator(object):
                         ln >= 1):
                     try:
                         self.upload_schema = Schema.fromstring(args[0])
-                    except:
+                    except Exception:
                         # Fails if the argument is an array name
                         pass
 

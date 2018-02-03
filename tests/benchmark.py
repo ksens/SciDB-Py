@@ -169,7 +169,7 @@ Total:            {:6.2f} seconds {:6.2f} MB/second""".format(
 if __name__ == "__main__":
     try:
         mb = int(sys.argv[1])
-    except:
+    except Exception:
         mb = 5                      # MB
     runs = 3
 
