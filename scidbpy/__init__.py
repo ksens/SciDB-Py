@@ -52,7 +52,7 @@ Cleanup:
 Requirements
 ============
 
-SciDB ``16.9`` with Shim
+SciDB ``16.9`` or newer with Shim
 
 Python ``2.7.x``, ``3.4.x``, ``3.5.x``, ``3.6.x`` or newer.
 
@@ -794,4 +794,4 @@ verify     = False
 from .db import connect, iquery, Array
 from .schema import Attribute, Dimension, Schema
 
-__version__ = '16.9.5'
+__version__ = '18.1.1'
