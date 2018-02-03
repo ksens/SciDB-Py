@@ -794,4 +794,4 @@ verify     = False
 from .db import connect, iquery, Array
 from .schema import Attribute, Dimension, Schema
 
-__version__ = '16.9.5'
+__version__ = '16.9.10'
