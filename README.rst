@@ -77,11 +77,11 @@ Installation
 
 Install latest release::
 
-  $ pip install scidb-py
+  pip install scidb-py
 
 Install development version from GitHub::
 
-  $ pip install git+http://github.com/paradigm4/scidb-py.git
+  pip install git+http://github.com/paradigm4/scidb-py.git
 
 
 Documentation
