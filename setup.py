@@ -31,6 +31,7 @@ setup(
         'enum34',
         'numpy',
         'pandas',
+        'pyarrow',
         'requests',
         'six',
     ],

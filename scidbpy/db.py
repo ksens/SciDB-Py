@@ -12,6 +12,7 @@ import logging
 import numpy
 import os
 import pandas
+import pyarrow
 import re
 import requests
 import string
@@ -176,6 +177,7 @@ verify     = {}'''.format(*self)
     def iquery(self,
                query,
                fetch=False,
+               use_arrow=False,
                atts_only=False,
                as_dataframe=True,
                dataframe_promo=True,
@@ -188,6 +190,10 @@ verify     = {}'''.format(*self)
 
         :param bool fetch: If ``True``, download SciDB array (default
           ``False``)
+
+        :param bool use_arrow: If ``True``, download SciDB array using
+          Apache Arrow format. Requires
+          ``accelerated_io_tools``. (default ``False``)
 
         :param bool atts_only: If ``True``, download only SciDB array
           attributes without dimensions (default ``False``)
@@ -327,11 +333,14 @@ verify     = {}'''.format(*self)
             # Execute Query and Download content
             self._shim(Shim.execute_query,
                        query=query,
-                       save=schema.atts_fmt_scidb)
+                       save='arrow' if use_arrow else schema.atts_fmt_scidb)
             buf = self._shim(Shim.read_bytes, n=0).content
 
             # Build result
-            if schema.is_fixsize():
+            if use_arrow:
+                data = pyarrow.RecordBatchStreamReader(
+                    pyarrow.BufferReader(buf)).read_pandas()
+            elif schema.is_fixsize():
                 data = numpy.frombuffer(buf, dtype=schema.atts_dtype)
 
                 if as_dataframe:
