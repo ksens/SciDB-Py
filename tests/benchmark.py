@@ -11,7 +11,7 @@ def setup(mb):
     db.iquery(
         'store(build(<x:int64 not null>[i=0:{}], random()), bm)'.format(
             cnt - 1))
-    ar = db.iquery('scan(bm)', fetch=True, atts_only=True)
+    ar = db.iquery('scan(bm)', fetch=True, atts_only=True, as_dataframe=False)
     print("""\
 Data size:      {:6.2f} MB
 In-memory size: {:6.2f} MB
@@ -77,7 +77,7 @@ NumPy frombuffer: {:6.2f} seconds {:>6s} MB/second""".format(
 
     rt = timeit.Timer(
         stmt="""
-db.iquery("scan(bm)", fetch=True, atts_only=True)""",
+db.iquery("scan(bm)", fetch=True, atts_only=True, as_dataframe=False)""",
         setup="""
 import scidbpy
 
@@ -93,7 +93,7 @@ import numpy
 import scidbpy
 
 db = scidbpy.connect()
-ar = db.iquery('{}', fetch=True, atts_only=True){}
+ar = db.iquery('{}', fetch=True, atts_only=True, as_dataframe=False){}
 schema = scidbpy.schema.Schema.fromstring('<x:int64 {}>[i]')
 query = "load(bm, '{fn}', 0, '{fmt}')"
 fmt = schema.atts_fmt_scidb
@@ -157,7 +157,7 @@ db.iquery("load(bm, '{fn}', 0, '{fmt}')",
 import scidbpy
 
 db = scidbpy.connect()
-ar = db.iquery('{}', fetch=True, atts_only=True){}
+ar = db.iquery('{}', fetch=True, atts_only=True, as_dataframe=False){}
 """.format('scan(bm)' if not_null or not struct_array
            else 'redimension(scan(bm), <x:int64>[i])',
            '' if struct_array else '["x"]')).timeit(number=runs) / runs
