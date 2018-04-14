@@ -9,7 +9,7 @@ SciDB-Py Documentation
 .. warning::
 
     Since SciDB-Py Release **16.9.1** (released in `September 2017`)
-    the library has been rewritten entirely from scratch. ``16.9.1``
+    the library has been rewritten entirely from scratch. **16.9.1**
     and newer versions are **not compatible** with the previous
     versions of the library. The documentation for the previous
     versions is available at `SciDB-Py documentation (legacy)
