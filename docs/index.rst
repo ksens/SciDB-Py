@@ -36,13 +36,13 @@ query authentication to session authentication. SciDB-Py has been
 updated to be compatible with the new Shim. Below is the compatibility
 matrix between SciDB-Py and Shim:
 
-=====       =====
-SciDB-Py    Shim
-=====       =====
-``16.9.1``  query authentication (old Shim)
-``16.9.2``  query authentication (old Shim)
-``16.9.10`` session authentication (new Shim)
-=====       =====
+===========  =====
+SciDB-Py     Shim
+===========  =====
+``16.9.1``   query authentication (old Shim)
+``16.9.2``   query authentication (old Shim)
+``16.9.10``  session authentication (new Shim)
+===========  =====
 
 From ``16.9.10`` onwards only Shim with session authentication is
 supported.
