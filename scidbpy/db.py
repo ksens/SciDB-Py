@@ -192,8 +192,8 @@ verify     = {}'''.format(*self)
           ``False``)
 
         :param bool use_arrow: If ``True``, download SciDB array using
-          Apache Arrow format. Requires
-          ``accelerated_io_tools``. (default ``False``)
+          Apache Arrow library. Requires ``accelerated_io_tools`` and
+          ``aio`` enabled in ``Shim``. (default ``False``)
 
         :param bool atts_only: If ``True``, download only SciDB array
           attributes without dimensions (default ``False``)

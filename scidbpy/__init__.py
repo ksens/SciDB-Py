@@ -624,6 +624,19 @@ array([((255, 0),), ((255, 1),), ((255, 2),)],
       dtype=[('x', [('null', 'u1'), ('val', '<i8')])])
 
 
+If the `accelerated_io_tools
+<https://github.com/Paradigm4/accelerated_io_tools>`_ SciDB plugin is
+installed and enabled in `Shim <https://github.com/Paradigm4/shim>`_,
+SciDB arrays can be downloaded using the Apache Arrow library:
+
+>>> db.iquery('scan(foo)', fetch=True, use_arrow=True)
+... # doctest: +SKIP
+   i    x
+0  0  0.0
+1  1  1.0
+2  2  2.0
+
+
 Upload Data to SciDB
 --------------------
 
