@@ -147,12 +147,12 @@ class Attribute(object):
     """
 
     _regex = re.compile('''
-        \s*
-        (?P<name>      \w+ )  \s* : \s*
-        (?P<type_name> \w+ )  \s*
-        (?:                  (?P<not_null>    NOT )? \s+ NULL )? \s*
-        (?: DEFAULT     \s+  (?P<default>     \S+ )           )? \s*
-        (?: COMPRESSION \s+ '(?P<compression> \w+ )'          )? \s*
+        \\s*
+        (?P<name>      \\w+ )  \\s* : \\s*
+        (?P<type_name> \\w+ )  \\s*
+        (?:                   (?P<not_null>    NOT )? \\s+ NULL )? \\s*
+        (?: DEFAULT     \\s+  (?P<default>     \\S+ )           )? \\s*
+        (?: COMPRESSION \\s+ '(?P<compression> \\w+ )'          )? \\s*
         $''', re.VERBOSE | re.IGNORECASE)
     # length dtype for variable-size SciDB types
     _length_dtype = numpy.dtype(numpy.uint32)
@@ -377,16 +377,16 @@ class Dimension(object):
     """
 
     _regex = re.compile('''
-        \s*
-        (?P<name> \w+ ) \s*
-        (?: = \s* (?P<low_value>  [^:\s]+ ) \s*
-                  : \s*
-                  (?P<high_value> [^:\s]+ ) \s*
-                  (?: : \s* (?P<chunk_overlap> [^:\s]+ ) \s*
-                            (?: : \s* (?P<chunk_length> [^:\s]+ ) )?
-                  )?
+        \\s*
+        (?P<name> \\w+ ) \\s*
+        (?: = \\s* (?P<low_value>  [^:\\s]+ ) \\s*
+                   : \\s*
+                   (?P<high_value> [^:\\s]+ ) \\s*
+                   (?: : \\s* (?P<chunk_overlap> [^:\\s]+ ) \\s*
+                              (?: : \\s* (?P<chunk_length> [^:\\s]+ ) )?
+                   )?
         )?
-        \s* $''', re.VERBOSE)
+        \\s* $''', re.VERBOSE)
 
     def __init__(self,
                  name,
@@ -538,13 +538,13 @@ class Schema(object):
     """
 
     _regex_name = re.compile(
-        '\s* (?: not \s+ empty \s+ )? (?P<name> [\w@]+ )?', re.VERBOSE)
+        '\\s* (?: not \\s+ empty \\s+ )? (?P<name> [\\w@]+ )?', re.VERBOSE)
 
     _regex_atts = re.compile(
-        '\s*  < ( [^,>]+  \s* (?: , \s* [^,>]+  \s* )* )  >', re.VERBOSE)
+        '\\s*  < ( [^,>]+  \\s* (?: , \\s* [^,>]+  \\s* )* )  >', re.VERBOSE)
 
     _regex_dims = re.compile(
-        '\s* \[ ( [^;\]]+ \s* (?: ; \s* [^;\]]+ \s* )* ) \] \s* $',
+        '\\s* \\[ ( [^;\\]]+ \\s* (?: ; \\s* [^;\\]]+ \\s* )* ) \\] \\s* $',
         re.VERBOSE)
 
     def __init__(self, name=None, atts=(), dims=()):
