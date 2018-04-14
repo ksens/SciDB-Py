@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &#8212; SciDB-Py 16.9 documentation</title>
+    <title>API &#8212; SciDB-Py 18.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '16.9',
+        VERSION:     '18.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -51,6 +51,13 @@
 <dt id="scidbpy.db.Array">
 <em class="property">class </em><code class="descclassname">scidbpy.db.</code><code class="descname">Array</code><span class="sig-paren">(</span><em>db</em>, <em>name</em>, <em>gc=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/db.html#Array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.db.Array" title="Permalink to this definition">¶</a></dt>
 <dd><p>Access to individual array</p>
+<dl class="method">
+<dt id="scidbpy.db.Array.head">
+<code class="descname">head</code><span class="sig-paren">(</span><em>n=5</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/db.html#Array.head"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.db.Array.head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to <code class="docutils literal"><span class="pre">pandas.DataFrame.head</span></code>. Makes use of the <code class="docutils literal"><span class="pre">limit</span></code>
+operator, if available.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -88,29 +95,29 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>scidb_url</strong> (<em>string</em>) – SciDB connection URL. The URL for the
-Shim server. If <cite>None</cite>, use the value of the <cite>SCIDB_URL</cite>
+Shim server. If <code class="docutils literal"><span class="pre">None</span></code>, use the value of the <code class="docutils literal"><span class="pre">SCIDB_URL</span></code>
 environment variable, if present (default
-<cite>http://localhost:8080</cite>)</li>
+<code class="docutils literal"><span class="pre">http://localhost:8080</span></code>)</li>
 <li><strong>scidb_auth</strong> (<em>tuple</em>) – Tuple with username and password for
 connecting to SciDB, if password authentication method is used
-(default <cite>None</cite>)</li>
+(default <code class="docutils literal"><span class="pre">None</span></code>)</li>
 <li><strong>http_auth</strong> (<em>tuple</em>) – Tuple with username and password for
 connecting to Shim, if Shim authentication is used (default
-<cite>None</cite>)</li>
+<code class="docutils literal"><span class="pre">None</span></code>)</li>
 <li><strong>namespace</strong> (<em>string</em>) – Initial namespace for the
 connection. Only applicable for SciDB Enterprise Edition. The
-namespace can changed at any time using the <cite>set_namespace</cite>
-SciDB operator (default <cite>None</cite>)</li>
-<li><strong>verify</strong> (<em>bool</em>) – If <cite>False</cite>, HTTPS certificates are not
-verified. This value is passed to the Python <cite>requests</cite>
+namespace can changed at any time using the <code class="docutils literal"><span class="pre">set_namespace</span></code>
+SciDB operator (default <code class="docutils literal"><span class="pre">None</span></code>)</li>
+<li><strong>verify</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">False</span></code>, HTTPS certificates are not
+verified. This value is passed to the Python <code class="docutils literal"><span class="pre">requests</span></code>
 library. See Python <a class="reference external" href="http://docs.python-requests.org/en/master/">requests</a> library <a class="reference external" href="http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification">SSL Cert
 Verification</a> section for details on the <code class="docutils literal"><span class="pre">verify</span></code>
-argument (default <cite>None</cite>)</li>
-<li><strong>no_ops</strong> (<em>bool</em>) – If <cite>True</cite>, the list of operators is not
+argument (default <code class="docutils literal"><span class="pre">None</span></code>)</li>
+<li><strong>no_ops</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, the list of operators is not
 fetched at this time and the connection is not implicitly
 verified. This expedites the execution of the function but
-disallows for calling the SciDB operators directly from the <cite>DB</cite>
-instance e.g., <cite>db.scan</cite> (default <cite>False</cite>)</li>
+disallows for calling the SciDB operators directly from the
+<code class="docutils literal"><span class="pre">DB</span></code> instance e.g., <code class="docutils literal"><span class="pre">db.scan</span></code> (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
 </ul>
 </td>
 </tr>
@@ -118,7 +125,7 @@ instance e.g., <cite>db.scan</cite> (default <cite>False</cite>)</li>
 </table>
 <dl class="method">
 <dt id="scidbpy.db.DB.iquery">
-<code class="descname">iquery</code><span class="sig-paren">(</span><em>query</em>, <em>fetch=False</em>, <em>atts_only=False</em>, <em>as_dataframe=False</em>, <em>dataframe_promo=True</em>, <em>schema=None</em>, <em>upload_data=None</em>, <em>upload_schema=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/db.html#DB.iquery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.db.DB.iquery" title="Permalink to this definition">¶</a></dt>
+<code class="descname">iquery</code><span class="sig-paren">(</span><em>query</em>, <em>fetch=False</em>, <em>use_arrow=False</em>, <em>atts_only=False</em>, <em>as_dataframe=True</em>, <em>dataframe_promo=True</em>, <em>schema=None</em>, <em>upload_data=None</em>, <em>upload_schema=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/db.html#DB.iquery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.db.DB.iquery" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute query in SciDB</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -126,44 +133,44 @@ instance e.g., <cite>db.scan</cite> (default <cite>False</cite>)</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>query</strong> (<em>string</em>) – SciDB AFL query to execute</li>
-<li><strong>fetch</strong> (<em>bool</em>) – If <cite>True</cite>, download SciDB array (default
-<cite>False</cite>)</li>
-<li><strong>atts_only</strong> (<em>bool</em>) – If <cite>True</cite>, download only SciDB array
-attributes without dimensions (default <cite>False</cite>)</li>
-<li><strong>as_dataframe</strong> (<em>bool</em>) – If <cite>True</cite>, return a Pandas
-DataFrame. If <cite>False</cite>, return a NumPy array (default
-<cite>False</cite>)</li>
-<li><strong>dataframe_promo</strong> (<em>bool</em>) – If <cite>True</cite>, null-able types are
-promoted as per Pandas ‘promotion scheme
-&lt;<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/gotchas.html">http://pandas.pydata.org/pandas-docs/stable/gotchas.html</a>
-#na-type-promotions&gt;`_ If <cite>False</cite>, object records are used
-for null-able types (default <cite>True</cite>)</li>
+<li><strong>fetch</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, download SciDB array (default
+<code class="docutils literal"><span class="pre">False</span></code>)</li>
+<li><strong>use_arrow</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, download SciDB array using
+Apache Arrow library. Requires <code class="docutils literal"><span class="pre">accelerated_io_tools</span></code> and
+<code class="docutils literal"><span class="pre">aio</span></code> enabled in <code class="docutils literal"><span class="pre">Shim</span></code>. (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
+<li><strong>atts_only</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, download only SciDB array
+attributes without dimensions (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
+<li><strong>as_dataframe</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, return a Pandas
+DataFrame. If <code class="docutils literal"><span class="pre">False</span></code>, return a NumPy array (default
+<code class="docutils literal"><span class="pre">True</span></code>)</li>
+<li><strong>dataframe_promo</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, null-able types are
+promoted as per Pandas <a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/gotchas.html#na-type-promotions">promotion scheme</a> If <code class="docutils literal"><span class="pre">False</span></code>, object records are used
+for null-able types (default <code class="docutils literal"><span class="pre">True</span></code>)</li>
 <li><strong>schema</strong> – Schema of the SciDB array to use when
 downloading the array. Schema is not verified. If schema is
 a Schema instance, it is copied. Otherwise, a
-<code class="xref py py-class docutils literal"><span class="pre">Schema</span></code> object is built using
-<code class="xref py py-func docutils literal"><span class="pre">Schema.fromstring()</span></code> (default <cite>None</cite>)</li>
+:py:class:<code class="docutils literal"><span class="pre">Schema</span></code> object is built using
+:py:func:<code class="docutils literal"><span class="pre">Schema.fromstring</span></code> (default <code class="docutils literal"><span class="pre">None</span></code>)</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DB</span><span class="p">()</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;build(&lt;x:int64&gt;[i=0:1; j=0:1], i + j)&#39;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 0, (255, 0)),</span>
-<span class="go">       (0, 1, (255, 1)),</span>
-<span class="go">       (1, 0, (255, 1)),</span>
-<span class="go">       (1, 1, (255, 2))],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;j&#39;, &#39;&lt;i8&#39;),</span>
-<span class="go">             (&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+<span class="go">   i  j    x</span>
+<span class="go">0  0  0  0.0</span>
+<span class="go">1  0  1  1.0</span>
+<span class="go">2  1  0  1.0</span>
+<span class="go">3  1  1  2.0</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DB</span><span class="p">()</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s2">&quot;input(</span><span class="si">{sch}</span><span class="s2">, &#39;</span><span class="si">{fn}</span><span class="s2">&#39;, 0, &#39;</span><span class="si">{fmt}</span><span class="s2">&#39;)&quot;</span><span class="p">,</span>
 <span class="gp">... </span>            <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="gp">... </span>            <span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 3), (1, 4), (2, 5)],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;&lt;i8&#39;)])</span>
+<span class="go">   i  x</span>
+<span class="go">0  0  3</span>
+<span class="go">1  1  4</span>
+<span class="go">2  2  5</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -188,15 +195,14 @@ a Schema instance, it is copied. Otherwise, a
 <dl class="method">
 <dt id="scidbpy.db.DB.load_ops">
 <code class="descname">load_ops</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/db.html#DB.load_ops"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.db.DB.load_ops" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get list of operators and macros. Also sets the _id field used to
-generate unique array names</p>
+<dd><p>Get list of operators and macros.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="scidbpy.db.DB.next_array_name">
 <code class="descname">next_array_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/db.html#DB.next_array_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.db.DB.next_array_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a uniqu array name. Keep track on these names using the
-_id field and a conter</p>
+_uid field and a counter</p>
 </dd></dl>
 
 </dd></dl>
@@ -225,21 +231,41 @@ fetch.</p>
 <dd><p>Represent SciDB array attribute</p>
 <p>Construct an attribute using Attribute constructor:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Attribute</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="n">not_null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">Attribute(&#39;foo&#39;, &#39;int64&#39;, True, None, None)</span>
+<span class="gp">... </span>
+<span class="go">Attribute(name=&#39;foo&#39;,</span>
+<span class="go">          type_name=&#39;int64&#39;,</span>
+<span class="go">          not_null=True,</span>
+<span class="go">          default=None,</span>
+<span class="go">          compression=None)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Attribute</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
-<span class="go">Attribute(&#39;foo&#39;, &#39;int64&#39;, False, 100, &#39;zlib&#39;)</span>
+<span class="gp">... </span>
+<span class="go">Attribute(name=&#39;foo&#39;,</span>
+<span class="go">          type_name=&#39;int64&#39;,</span>
+<span class="go">          not_null=False,</span>
+<span class="go">          default=100,</span>
+<span class="go">          compression=&#39;zlib&#39;)</span>
 </pre></div>
 </div>
 <p>Construct an attribute from a string:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Attribute</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="s1">&#39;foo:int64&#39;</span><span class="p">)</span>
-<span class="go">Attribute(&#39;foo&#39;, &#39;int64&#39;, False, None, None)</span>
+<span class="gp">... </span>
+<span class="go">Attribute(name=&#39;foo&#39;,</span>
+<span class="go">          type_name=&#39;int64&#39;,</span>
+<span class="go">          not_null=False,</span>
+<span class="go">          default=None,</span>
+<span class="go">          compression=None)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Attribute</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="s2">&quot;taz : string NOT null DEFAULT &#39;&#39; compression bzlib&quot;</span><span class="p">)</span>
-<span class="go">Attribute(&#39;taz&#39;, &#39;string&#39;, True, &quot;&#39;&#39;&quot;, &#39;bzlib&#39;)</span>
+<span class="gp">... </span>    <span class="s2">&quot;taz : string NOT null DEFAULT &#39;&#39; compression &#39;bzlib&#39;&quot;</span><span class="p">)</span>
+<span class="gp">... </span>
+<span class="go">Attribute(name=&#39;taz&#39;,</span>
+<span class="go">          type_name=&#39;string&#39;,</span>
+<span class="go">          not_null=True,</span>
+<span class="go">          default=&quot;&#39;&#39;&quot;,</span>
+<span class="go">          compression=&#39;bzlib&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -250,20 +276,40 @@ fetch.</p>
 <dd><p>Represent SciDB array dimension</p>
 <p>Construct a dimension using the Dimension constructor:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Dimension</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
-<span class="go">Dimension(&#39;foo&#39;, None, None, None, None)</span>
+<span class="gp">... </span>
+<span class="go">Dimension(name=&#39;foo&#39;,</span>
+<span class="go">          low_value=None,</span>
+<span class="go">          high_value=None,</span>
+<span class="go">          chunk_overlap=None,</span>
+<span class="go">          chunk_length=None)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Dimension</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;1000&#39;</span><span class="p">)</span>
-<span class="go">Dimension(&#39;foo&#39;, -100, 10, &#39;?&#39;, 1000)</span>
+<span class="gp">... </span>
+<span class="go">Dimension(name=&#39;foo&#39;,</span>
+<span class="go">          low_value=-100,</span>
+<span class="go">          high_value=10,</span>
+<span class="go">          chunk_overlap=&#39;?&#39;,</span>
+<span class="go">          chunk_length=1000)</span>
 </pre></div>
 </div>
 <p>Construct a dimension from a string:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Dimension</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
-<span class="go">Dimension(&#39;foo&#39;, None, None, None, None)</span>
+<span class="gp">... </span>
+<span class="go">Dimension(name=&#39;foo&#39;,</span>
+<span class="go">          low_value=None,</span>
+<span class="go">          high_value=None,</span>
+<span class="go">          chunk_overlap=None,</span>
+<span class="go">          chunk_length=None)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Dimension</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="s1">&#39;foo=-100:*:?:10&#39;</span><span class="p">)</span>
-<span class="go">Dimension(&#39;foo&#39;, -100, &#39;*&#39;, &#39;?&#39;, 10)</span>
+<span class="gp">... </span>
+<span class="go">Dimension(name=&#39;foo&#39;,</span>
+<span class="go">          low_value=-100,</span>
+<span class="go">          high_value=&#39;*&#39;,</span>
+<span class="go">          chunk_overlap=&#39;?&#39;,</span>
+<span class="go">          chunk_length=10)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -276,9 +322,17 @@ fetch.</p>
 constructors:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Schema</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Attribute</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">),),</span> <span class="p">(</span><span class="n">Dimension</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),))</span>
 <span class="gp">... </span>
-<span class="go">Schema(&#39;foo&#39;,</span>
-<span class="go">       (Attribute(&#39;x&#39;, &#39;int64&#39;, False, None, None),),</span>
-<span class="go">       (Dimension(&#39;i&#39;, 0, 10, None, None),))</span>
+<span class="go">Schema(name=&#39;foo&#39;,</span>
+<span class="go">       atts=(Attribute(name=&#39;x&#39;,</span>
+<span class="go">                       type_name=&#39;int64&#39;,</span>
+<span class="go">                       not_null=False,</span>
+<span class="go">                       default=None,</span>
+<span class="go">                       compression=None),),</span>
+<span class="go">       dims=(Dimension(name=&#39;i&#39;,</span>
+<span class="go">                       low_value=0,</span>
+<span class="go">                       high_value=10,</span>
+<span class="go">                       chunk_overlap=None,</span>
+<span class="go">                       chunk_length=None),))</span>
 </pre></div>
 </div>
 <p>Construct a schema using Schema constructor and fromstring methods
@@ -287,20 +341,44 @@ of Attribute and Dimension:</p>
 <span class="gp">... </span>       <span class="p">(</span><span class="n">Attribute</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="s1">&#39;x:int64&#39;</span><span class="p">),),</span>
 <span class="gp">... </span>       <span class="p">(</span><span class="n">Dimension</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="s1">&#39;i=0:10&#39;</span><span class="p">),))</span>
 <span class="gp">... </span>
-<span class="go">Schema(&#39;foo&#39;,</span>
-<span class="go">       (Attribute(&#39;x&#39;, &#39;int64&#39;, False, None, None),),</span>
-<span class="go">       (Dimension(&#39;i&#39;, 0, 10, None, None),))</span>
+<span class="go">Schema(name=&#39;foo&#39;,</span>
+<span class="go">       atts=(Attribute(name=&#39;x&#39;,</span>
+<span class="go">                       type_name=&#39;int64&#39;,</span>
+<span class="go">                       not_null=False,</span>
+<span class="go">                       default=None,</span>
+<span class="go">                       compression=None),),</span>
+<span class="go">       dims=(Dimension(name=&#39;i&#39;,</span>
+<span class="go">                       low_value=0,</span>
+<span class="go">                       high_value=10,</span>
+<span class="go">                       chunk_overlap=None,</span>
+<span class="go">                       chunk_length=None),))</span>
 </pre></div>
 </div>
 <p>Construct a schema from a string:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Schema</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="s1">&#39;foo@1&lt;x:int64 not null, y:double&gt;[i=0:*; j=-100:0:0:10]&#39;</span><span class="p">)</span>
 <span class="gp">... </span>
-<span class="go">Schema(&#39;foo@1&#39;,</span>
-<span class="go">       (Attribute(&#39;x&#39;,  &#39;int64&#39;,  True, None, None),</span>
-<span class="go">        Attribute(&#39;y&#39;, &#39;double&#39;, False, None, None)),</span>
-<span class="go">       (Dimension(&#39;i&#39;,    0, &#39;*&#39;, None, None),</span>
-<span class="go">        Dimension(&#39;j&#39;, -100,   0,    0, 10)))</span>
+<span class="go">Schema(name=&#39;foo@1&#39;,</span>
+<span class="go">       atts=(Attribute(name=&#39;x&#39;,</span>
+<span class="go">                       type_name=&#39;int64&#39;,</span>
+<span class="go">                       not_null=True,</span>
+<span class="go">                       default=None,</span>
+<span class="go">                       compression=None),</span>
+<span class="go">             Attribute(name=&#39;y&#39;,</span>
+<span class="go">                       type_name=&#39;double&#39;,</span>
+<span class="go">                       not_null=False,</span>
+<span class="go">                       default=None,</span>
+<span class="go">                       compression=None)),</span>
+<span class="go">       dims=(Dimension(name=&#39;i&#39;,</span>
+<span class="go">                       low_value=0,</span>
+<span class="go">                       high_value=&#39;*&#39;,</span>
+<span class="go">                       chunk_overlap=None,</span>
+<span class="go">                       chunk_length=None),</span>
+<span class="go">             Dimension(name=&#39;j&#39;,</span>
+<span class="go">                       low_value=-100,</span>
+<span class="go">                       high_value=0,</span>
+<span class="go">                       chunk_overlap=0,</span>
+<span class="go">                       chunk_length=10)))</span>
 </pre></div>
 </div>
 <p>Print a schema constructed from a string:</p>
@@ -359,6 +437,16 @@ attributes list.</p>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt id="scidbpy.schema.Schema.promote">
+<code class="descname">promote</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/schema.html#Schema.promote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.schema.Schema.promote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Promote nullable attributes in the DataFrame to types which
+support some type of null values as per Pandas ‘promotion
+scheme
+&lt;<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/gotchas.html">http://pandas.pydata.org/pandas-docs/stable/gotchas.html</a>
+#na-type-promotions&gt;`_</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -414,7 +502,7 @@ attributes list.</p>
 <hr />
 <ul>
     
-    <li class="toctree-l1"><a href="https://paradigm4.atlassian.net/wiki/display/ESD169">SciDB 16.9 Docs</a></li>
+    <li class="toctree-l1"><a href="https://paradigm4.atlassian.net/wiki/spaces/scidb/overview">SciDB 18.1 Docs</a></li>
     
     <li class="toctree-l1"><a href="https://github.com/Paradigm4/SciDB-Py/issues">Bug Reports</a></li>
     

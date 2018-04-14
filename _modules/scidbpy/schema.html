@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>scidbpy.schema &#8212; SciDB-Py 16.9 documentation</title>
+    <title>scidbpy.schema &#8212; SciDB-Py 18.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '16.9',
+        VERSION:     '18.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -51,6 +51,7 @@
 
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">import</span> <span class="nn">struct</span>
@@ -153,29 +154,49 @@
 <span class="sd">    Construct an attribute using Attribute constructor:</span>
 
 <span class="sd">    &gt;&gt;&gt; Attribute(&#39;foo&#39;, &#39;int64&#39;, not_null=True)</span>
-<span class="sd">    Attribute(&#39;foo&#39;, &#39;int64&#39;, True, None, None)</span>
+<span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">    Attribute(name=&#39;foo&#39;,</span>
+<span class="sd">              type_name=&#39;int64&#39;,</span>
+<span class="sd">              not_null=True,</span>
+<span class="sd">              default=None,</span>
+<span class="sd">              compression=None)</span>
 
 <span class="sd">    &gt;&gt;&gt; Attribute(&#39;foo&#39;, &#39;int64&#39;, default=100, compression=&#39;zlib&#39;)</span>
-<span class="sd">    Attribute(&#39;foo&#39;, &#39;int64&#39;, False, 100, &#39;zlib&#39;)</span>
+<span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">    Attribute(name=&#39;foo&#39;,</span>
+<span class="sd">              type_name=&#39;int64&#39;,</span>
+<span class="sd">              not_null=False,</span>
+<span class="sd">              default=100,</span>
+<span class="sd">              compression=&#39;zlib&#39;)</span>
 
 
 <span class="sd">    Construct an attribute from a string:</span>
 
 <span class="sd">    &gt;&gt;&gt; Attribute.fromstring(&#39;foo:int64&#39;)</span>
-<span class="sd">    Attribute(&#39;foo&#39;, &#39;int64&#39;, False, None, None)</span>
+<span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">    Attribute(name=&#39;foo&#39;,</span>
+<span class="sd">              type_name=&#39;int64&#39;,</span>
+<span class="sd">              not_null=False,</span>
+<span class="sd">              default=None,</span>
+<span class="sd">              compression=None)</span>
 
 <span class="sd">    &gt;&gt;&gt; Attribute.fromstring(</span>
-<span class="sd">    ...     &quot;taz : string NOT null DEFAULT &#39;&#39; compression bzlib&quot;)</span>
-<span class="sd">    Attribute(&#39;taz&#39;, &#39;string&#39;, True, &quot;&#39;&#39;&quot;, &#39;bzlib&#39;)</span>
+<span class="sd">    ...     &quot;taz : string NOT null DEFAULT &#39;&#39; compression &#39;bzlib&#39;&quot;)</span>
+<span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">    Attribute(name=&#39;taz&#39;,</span>
+<span class="sd">              type_name=&#39;string&#39;,</span>
+<span class="sd">              not_null=True,</span>
+<span class="sd">              default=&quot;&#39;&#39;&quot;,</span>
+<span class="sd">              compression=&#39;bzlib&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">        \s*</span>
-<span class="s1">        (?P&lt;name&gt;      \w+ ) \s* : \s*</span>
-<span class="s1">        (?P&lt;type_name&gt; \w+ ) \s*</span>
-<span class="s1">        (?:                 (?P&lt;not_null&gt;    NOT )? \s+ NULL )? \s*</span>
-<span class="s1">        (?: DEFAULT     \s+ (?P&lt;default&gt;     \S+ )           )? \s*</span>
-<span class="s1">        (?: COMPRESSION \s+ (?P&lt;compression&gt; \w+ )           )? \s*</span>
+<span class="s1">        </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">        (?P&lt;name&gt;      </span><span class="se">\\</span><span class="s1">w+ )  </span><span class="se">\\</span><span class="s1">s* : </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">        (?P&lt;type_name&gt; </span><span class="se">\\</span><span class="s1">w+ )  </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">        (?:                   (?P&lt;not_null&gt;    NOT )? </span><span class="se">\\</span><span class="s1">s+ NULL )? </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">        (?: DEFAULT     </span><span class="se">\\</span><span class="s1">s+  (?P&lt;default&gt;     </span><span class="se">\\</span><span class="s1">S+ )           )? </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">        (?: COMPRESSION </span><span class="se">\\</span><span class="s1">s+ &#39;(?P&lt;compression&gt; </span><span class="se">\\</span><span class="s1">w+ )&#39;          )? </span><span class="se">\\</span><span class="s1">s*</span>
 <span class="s1">        $&#39;&#39;&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
     <span class="c1"># length dtype for variable-size SciDB types</span>
     <span class="n">_length_dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
@@ -211,7 +232,12 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(</span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(&#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;name=</span><span class="si">{!r}</span><span class="s1">, &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;type_name=</span><span class="si">{!r}</span><span class="s1">, &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;not_null=</span><span class="si">{!r}</span><span class="s1">, &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;default=</span><span class="si">{!r}</span><span class="s1">, &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;compression=</span><span class="si">{!r}</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -220,7 +246,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">type_name</span><span class="p">,</span>
             <span class="s1">&#39; NOT NULL&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">not_null</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39; DEFAULT </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39; COMPRESSION </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">)</span>
+            <span class="s2">&quot; COMPRESSION &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compression</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -359,32 +385,52 @@
 <span class="sd">    Construct a dimension using the Dimension constructor:</span>
 
 <span class="sd">    &gt;&gt;&gt; Dimension(&#39;foo&#39;)</span>
-<span class="sd">    Dimension(&#39;foo&#39;, None, None, None, None)</span>
+<span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">    Dimension(name=&#39;foo&#39;,</span>
+<span class="sd">              low_value=None,</span>
+<span class="sd">              high_value=None,</span>
+<span class="sd">              chunk_overlap=None,</span>
+<span class="sd">              chunk_length=None)</span>
 
 <span class="sd">    &gt;&gt;&gt; Dimension(&#39;foo&#39;, -100, &#39;10&#39;, &#39;?&#39;, &#39;1000&#39;)</span>
-<span class="sd">    Dimension(&#39;foo&#39;, -100, 10, &#39;?&#39;, 1000)</span>
+<span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">    Dimension(name=&#39;foo&#39;,</span>
+<span class="sd">              low_value=-100,</span>
+<span class="sd">              high_value=10,</span>
+<span class="sd">              chunk_overlap=&#39;?&#39;,</span>
+<span class="sd">              chunk_length=1000)</span>
 
 
 <span class="sd">    Construct a dimension from a string:</span>
 
 <span class="sd">    &gt;&gt;&gt; Dimension.fromstring(&#39;foo&#39;)</span>
-<span class="sd">    Dimension(&#39;foo&#39;, None, None, None, None)</span>
+<span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">    Dimension(name=&#39;foo&#39;,</span>
+<span class="sd">              low_value=None,</span>
+<span class="sd">              high_value=None,</span>
+<span class="sd">              chunk_overlap=None,</span>
+<span class="sd">              chunk_length=None)</span>
 
 <span class="sd">    &gt;&gt;&gt; Dimension.fromstring(&#39;foo=-100:*:?:10&#39;)</span>
-<span class="sd">    Dimension(&#39;foo&#39;, -100, &#39;*&#39;, &#39;?&#39;, 10)</span>
+<span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">    Dimension(name=&#39;foo&#39;,</span>
+<span class="sd">              low_value=-100,</span>
+<span class="sd">              high_value=&#39;*&#39;,</span>
+<span class="sd">              chunk_overlap=&#39;?&#39;,</span>
+<span class="sd">              chunk_length=10)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">        \s*</span>
-<span class="s1">        (?P&lt;name&gt; \w+ ) \s*</span>
-<span class="s1">        (?: = \s* (?P&lt;low_value&gt;  [^:\s]+ ) \s*</span>
-<span class="s1">                  : \s*</span>
-<span class="s1">                  (?P&lt;high_value&gt; [^:\s]+ ) \s*</span>
-<span class="s1">                  (?: : \s* (?P&lt;chunk_overlap&gt; [^:\s]+ ) \s*</span>
-<span class="s1">                            (?: : \s* (?P&lt;chunk_length&gt; [^:\s]+ ) )?</span>
-<span class="s1">                  )?</span>
+<span class="s1">        </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">        (?P&lt;name&gt; </span><span class="se">\\</span><span class="s1">w+ ) </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">        (?: = </span><span class="se">\\</span><span class="s1">s* (?P&lt;low_value&gt;  [^:</span><span class="se">\\</span><span class="s1">s]+ ) </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">                   : </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">                   (?P&lt;high_value&gt; [^:</span><span class="se">\\</span><span class="s1">s]+ ) </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">                   (?: : </span><span class="se">\\</span><span class="s1">s* (?P&lt;chunk_overlap&gt; [^:</span><span class="se">\\</span><span class="s1">s]+ ) </span><span class="se">\\</span><span class="s1">s*</span>
+<span class="s1">                              (?: : </span><span class="se">\\</span><span class="s1">s* (?P&lt;chunk_length&gt; [^:</span><span class="se">\\</span><span class="s1">s]+ ) )?</span>
+<span class="s1">                   )?</span>
 <span class="s1">        )?</span>
-<span class="s1">        \s* $&#39;&#39;&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+<span class="s1">        </span><span class="se">\\</span><span class="s1">s* $&#39;&#39;&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">name</span><span class="p">,</span>
@@ -426,7 +472,12 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(</span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(&#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;name=</span><span class="si">{!r}</span><span class="s1">, &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;low_value=</span><span class="si">{!r}</span><span class="s1">, &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;high_value=</span><span class="si">{!r}</span><span class="s1">, &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;chunk_overlap=</span><span class="si">{!r}</span><span class="s1">, &#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;chunk_length=</span><span class="si">{!r}</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -455,9 +506,17 @@
 
 <span class="sd">    &gt;&gt;&gt; Schema(&#39;foo&#39;, (Attribute(&#39;x&#39;, &#39;int64&#39;),), (Dimension(&#39;i&#39;, 0, 10),))</span>
 <span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
-<span class="sd">    Schema(&#39;foo&#39;,</span>
-<span class="sd">           (Attribute(&#39;x&#39;, &#39;int64&#39;, False, None, None),),</span>
-<span class="sd">           (Dimension(&#39;i&#39;, 0, 10, None, None),))</span>
+<span class="sd">    Schema(name=&#39;foo&#39;,</span>
+<span class="sd">           atts=(Attribute(name=&#39;x&#39;,</span>
+<span class="sd">                           type_name=&#39;int64&#39;,</span>
+<span class="sd">                           not_null=False,</span>
+<span class="sd">                           default=None,</span>
+<span class="sd">                           compression=None),),</span>
+<span class="sd">           dims=(Dimension(name=&#39;i&#39;,</span>
+<span class="sd">                           low_value=0,</span>
+<span class="sd">                           high_value=10,</span>
+<span class="sd">                           chunk_overlap=None,</span>
+<span class="sd">                           chunk_length=None),))</span>
 
 
 <span class="sd">    Construct a schema using Schema constructor and fromstring methods</span>
@@ -467,9 +526,17 @@
 <span class="sd">    ...        (Attribute.fromstring(&#39;x:int64&#39;),),</span>
 <span class="sd">    ...        (Dimension.fromstring(&#39;i=0:10&#39;),))</span>
 <span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
-<span class="sd">    Schema(&#39;foo&#39;,</span>
-<span class="sd">           (Attribute(&#39;x&#39;, &#39;int64&#39;, False, None, None),),</span>
-<span class="sd">           (Dimension(&#39;i&#39;, 0, 10, None, None),))</span>
+<span class="sd">    Schema(name=&#39;foo&#39;,</span>
+<span class="sd">           atts=(Attribute(name=&#39;x&#39;,</span>
+<span class="sd">                           type_name=&#39;int64&#39;,</span>
+<span class="sd">                           not_null=False,</span>
+<span class="sd">                           default=None,</span>
+<span class="sd">                           compression=None),),</span>
+<span class="sd">           dims=(Dimension(name=&#39;i&#39;,</span>
+<span class="sd">                           low_value=0,</span>
+<span class="sd">                           high_value=10,</span>
+<span class="sd">                           chunk_overlap=None,</span>
+<span class="sd">                           chunk_length=None),))</span>
 
 
 <span class="sd">    Construct a schema from a string:</span>
@@ -477,11 +544,27 @@
 <span class="sd">    &gt;&gt;&gt; Schema.fromstring(</span>
 <span class="sd">    ...     &#39;foo@1&lt;x:int64 not null, y:double&gt;[i=0:*; j=-100:0:0:10]&#39;)</span>
 <span class="sd">    ... # doctest: +NORMALIZE_WHITESPACE</span>
-<span class="sd">    Schema(&#39;foo@1&#39;,</span>
-<span class="sd">           (Attribute(&#39;x&#39;,  &#39;int64&#39;,  True, None, None),</span>
-<span class="sd">            Attribute(&#39;y&#39;, &#39;double&#39;, False, None, None)),</span>
-<span class="sd">           (Dimension(&#39;i&#39;,    0, &#39;*&#39;, None, None),</span>
-<span class="sd">            Dimension(&#39;j&#39;, -100,   0,    0, 10)))</span>
+<span class="sd">    Schema(name=&#39;foo@1&#39;,</span>
+<span class="sd">           atts=(Attribute(name=&#39;x&#39;,</span>
+<span class="sd">                           type_name=&#39;int64&#39;,</span>
+<span class="sd">                           not_null=True,</span>
+<span class="sd">                           default=None,</span>
+<span class="sd">                           compression=None),</span>
+<span class="sd">                 Attribute(name=&#39;y&#39;,</span>
+<span class="sd">                           type_name=&#39;double&#39;,</span>
+<span class="sd">                           not_null=False,</span>
+<span class="sd">                           default=None,</span>
+<span class="sd">                           compression=None)),</span>
+<span class="sd">           dims=(Dimension(name=&#39;i&#39;,</span>
+<span class="sd">                           low_value=0,</span>
+<span class="sd">                           high_value=&#39;*&#39;,</span>
+<span class="sd">                           chunk_overlap=None,</span>
+<span class="sd">                           chunk_length=None),</span>
+<span class="sd">                 Dimension(name=&#39;j&#39;,</span>
+<span class="sd">                           low_value=-100,</span>
+<span class="sd">                           high_value=0,</span>
+<span class="sd">                           chunk_overlap=0,</span>
+<span class="sd">                           chunk_length=10)))</span>
 
 
 <span class="sd">    Print a schema constructed from a string:</span>
@@ -499,13 +582,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_regex_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="s1">&#39;\s* (?: not \s+ empty \s+ )? (?P&lt;name&gt; [\w@]+ )?&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+        <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">s* (?: not </span><span class="se">\\</span><span class="s1">s+ empty </span><span class="se">\\</span><span class="s1">s+ )? (?P&lt;name&gt; [</span><span class="se">\\</span><span class="s1">w@]+ )?&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
 
     <span class="n">_regex_atts</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="s1">&#39;\s*  &lt; ( [^,&gt;]+  \s* (?: , \s* [^,&gt;]+  \s* )* )  &gt;&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+        <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">s*  &lt; ( [^,&gt;]+  </span><span class="se">\\</span><span class="s1">s* (?: , </span><span class="se">\\</span><span class="s1">s* [^,&gt;]+  </span><span class="se">\\</span><span class="s1">s* )* )  &gt;&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
 
     <span class="n">_regex_dims</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="s1">&#39;\s* \[ ( [^;\]]+ \s* (?: ; \s* [^;\]]+ \s* )* ) \] \s* $&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">s* </span><span class="se">\\</span><span class="s1">[ ( [^;</span><span class="se">\\</span><span class="s1">]]+ </span><span class="se">\\</span><span class="s1">s* (?: ; </span><span class="se">\\</span><span class="s1">s* [^;</span><span class="se">\\</span><span class="s1">]]+ </span><span class="se">\\</span><span class="s1">s* )* ) </span><span class="se">\\</span><span class="s1">] </span><span class="se">\\</span><span class="s1">s* $&#39;</span><span class="p">,</span>
         <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atts</span><span class="o">=</span><span class="p">(),</span> <span class="n">dims</span><span class="o">=</span><span class="p">()):</span>
@@ -524,7 +607,7 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(</span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(name=</span><span class="si">{!r}</span><span class="s1">, atts=</span><span class="si">{!r}</span><span class="s1">, dims=</span><span class="si">{!r}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -539,6 +622,14 @@
             <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">),</span>
             <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">))</span>
 
+    <span class="k">def</span> <span class="nf">_promo_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">not_null</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cnt</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> type(s) promoted for null support.&#39;</span> <span class="o">+</span>
+                 <span class="s1">&#39; Precision loss may occur&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cnt</span><span class="p">),</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">atts_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__atts_dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -552,6 +643,43 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__atts_fmt_scidb</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">fmt_scidb</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__atts_fmt_scidb</span>
+
+    <span class="k">def</span> <span class="nf">pprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">),),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;nullable&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;overlap&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;chunk&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">)])</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">:</span>
+            <span class="n">info</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">pos</span><span class="p">,),</span>
+                     <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                      <span class="s1">&#39;attr&#39;</span><span class="p">,</span>
+                      <span class="n">a</span><span class="o">.</span><span class="n">type_name</span><span class="p">,</span>
+                      <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">not_null</span><span class="p">,</span>
+                      <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;&#39;</span><span class="p">))</span>
+            <span class="n">pos</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+            <span class="n">info</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">pos</span><span class="p">,),</span>
+                     <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                      <span class="s1">&#39;dim&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;int64&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                      <span class="n">d</span><span class="o">.</span><span class="n">low_value</span><span class="p">,</span>
+                      <span class="n">d</span><span class="o">.</span><span class="n">high_value</span><span class="p">,</span>
+                      <span class="n">d</span><span class="o">.</span><span class="n">chunk_overlap</span><span class="p">,</span>
+                      <span class="n">d</span><span class="o">.</span><span class="n">chunk_length</span><span class="p">))</span>
+            <span class="n">pos</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">info</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">is_fixsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">is_fixsize</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">)</span>
@@ -645,18 +773,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__atts_fmt_scidb</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="k">def</span> <span class="nf">get_promo_atts_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">cnt</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">not_null</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">cnt</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> type(s) promoted for null support.&#39;</span> <span class="o">+</span>
-                 <span class="s1">&#39; Precision loss may occur&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cnt</span><span class="p">),</span>
-                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_promo_warning</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span>
             <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">descr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">not_null</span> <span class="k">else</span>
              <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
               <span class="n">type_map_promo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                   <span class="n">a</span><span class="o">.</span><span class="n">type_name</span><span class="p">,</span> <span class="n">type_map_numpy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">type_name</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">)))</span>
              <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Schema.promote"><a class="viewcode-back" href="../../api.html#scidbpy.schema.Schema.promote">[docs]</a>    <span class="k">def</span> <span class="nf">promote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Promote nullable attributes in the DataFrame to types which</span>
+<span class="sd">        support some type of null values as per Pandas &#39;promotion</span>
+<span class="sd">        scheme</span>
+<span class="sd">        &lt;http://pandas.pydata.org/pandas-docs/stable/gotchas.html</span>
+<span class="sd">        #na-type-promotions&gt;`_</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_promo_warning</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">not_null</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">attr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">255</span> <span class="k">else</span> <span class="n">numpy</span><span class="o">.</span><span class="n">NAN</span>
+                          <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">]],</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">type_map_promo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">a</span><span class="o">.</span><span class="n">type_name</span><span class="p">,</span> <span class="n">type_map_numpy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="n">a</span><span class="o">.</span><span class="n">type_name</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">object</span><span class="p">)))</span></div>
 
     <span class="k">def</span> <span class="nf">frombytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dataframe_promo</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="c1"># Scan content and build (offset, size) metadata</span>
@@ -784,7 +925,7 @@
 <hr />
 <ul>
     
-    <li class="toctree-l1"><a href="https://paradigm4.atlassian.net/wiki/display/ESD169">SciDB 16.9 Docs</a></li>
+    <li class="toctree-l1"><a href="https://paradigm4.atlassian.net/wiki/spaces/scidb/overview">SciDB 18.1 Docs</a></li>
     
     <li class="toctree-l1"><a href="https://github.com/Paradigm4/SciDB-Py/issues">Bug Reports</a></li>
     

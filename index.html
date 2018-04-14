@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>SciDB-Py Documentation &#8212; SciDB-Py 16.9 documentation</title>
+    <title>SciDB-Py Documentation &#8212; SciDB-Py 18.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '16.9',
+        VERSION:     '18.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -46,11 +46,11 @@
 <h1>SciDB-Py Documentation<a class="headerlink" href="#scidb-py-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">This documentation is for SciDB-Py <strong>16.9.1</strong>. This library has
-been released in <cite>September 2017</cite> and has been rewritten entirely
-from scratch. This version is <strong>not compatible</strong> with the previous
+<p class="last">Since SciDB-Py Release <strong>16.9.1</strong> (released in <cite>September 2017</cite>)
+the library has been rewritten entirely from scratch. <strong>16.9.1</strong>
+and newer versions are <strong>not compatible</strong> with the previous
 versions of the library. The documentation for the previous
-versions is available at <a class="reference external" href="http://scidb-py.readthedocs.io/en/stable/">SciDB-Py documentation (legacy)</a>. GitHub pull
+versions is available at <a class="reference external" href="http://scidb-py.readthedocs.io/en/v16.9-legacy/">SciDB-Py documentation (legacy)</a>. GitHub pull
 requests are still accepted for the previous versions, but the
 code is not actively maintained.</p>
 </div>
@@ -72,7 +72,7 @@ code is not actively maintained.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.html#the-iquery-function">The iquery Function</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.html#id1">Download Data from SciDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.html#id2">Upload Data to SciDB</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#id3">Upload Data to SciDB</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.html#upload-numpy-arrays">Upload NumPy Arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.html#upload-binary-data">Upload Binary Data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.html#upload-data-files">Upload Data Files</a></li>
@@ -89,6 +89,41 @@ code is not actively maintained.</p>
 </ul>
 </li>
 </ul>
+</div>
+<div class="section" id="version-information">
+<h2>Version Information<a class="headerlink" href="#version-information" title="Permalink to this headline">¶</a></h2>
+<p>The major and minor version numbers of SciDB-Py track the major and
+minor version of SciDB they are compatible with. For example SciDB-Py
+<code class="docutils literal"><span class="pre">16.9.1</span></code>, <code class="docutils literal"><span class="pre">16.9.2</span></code> or <code class="docutils literal"><span class="pre">16.9.10</span></code> are all compatible with SciDB
+<code class="docutils literal"><span class="pre">16.9.x</span></code>.</p>
+<p>During SciDB <code class="docutils literal"><span class="pre">16.9</span></code>, Shim (HTTP service for SciDB) transitioned from
+query authentication to session authentication. SciDB-Py has been
+updated to be compatible with the new Shim. Below is the compatibility
+matrix between SciDB-Py and Shim:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">SciDB-Py</th>
+<th class="head">Shim</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">16.9.1</span></code></td>
+<td>query authentication (old Shim)</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">16.9.2</span></code></td>
+<td>query authentication (old Shim)</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">16.9.10</span></code></td>
+<td>session authentication (new Shim)</td>
+</tr>
+</tbody>
+</table>
+<p>From <code class="docutils literal"><span class="pre">16.9.10</span></code> onwards only Shim with session authentication is
+supported.</p>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -146,7 +181,7 @@ code is not actively maintained.</p>
 <hr />
 <ul>
     
-    <li class="toctree-l1"><a href="https://paradigm4.atlassian.net/wiki/display/ESD169">SciDB 16.9 Docs</a></li>
+    <li class="toctree-l1"><a href="https://paradigm4.atlassian.net/wiki/spaces/scidb/overview">SciDB 18.1 Docs</a></li>
     
     <li class="toctree-l1"><a href="https://github.com/Paradigm4/SciDB-Py/issues">Bug Reports</a></li>
     

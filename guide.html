@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>User Guide &#8212; SciDB-Py 16.9 documentation</title>
+    <title>User Guide &#8212; SciDB-Py 18.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '16.9',
+        VERSION:     '18.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -59,9 +59,10 @@
 </div>
 <p>Download data from SciDB:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, (255, 0)), (1, (255, 1)), (2, (255, 2))],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+<span class="go">   i    x</span>
+<span class="go">0  0  0.0</span>
+<span class="go">1  1  1.0</span>
+<span class="go">2  2  2.0</span>
 </pre></div>
 </div>
 <p>Upload data to SciDB and create an array:</p>
@@ -74,12 +75,18 @@
 </div>
 <p>Run a query with chained operators and download the resulting array:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="s1">&#39;j&#39;</span><span class="p">,</span> <span class="n">ar</span><span class="o">.</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 0, (255, 0), 1), (1, 1, (255, 1), 2), (2, 2, (255, 2), 3)],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;),</span>
-<span class="go">             (&#39;x&#39;, &#39;&lt;i8&#39;),</span>
-<span class="go">             (&#39;x_1&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)]),</span>
-<span class="go">             (&#39;j&#39;, &#39;&lt;i8&#39;)])</span>
+<span class="go">   i  x  x_1  j</span>
+<span class="go">0  0  0  0.0  1</span>
+<span class="go">1  1  1  1.0  2</span>
+<span class="go">2  2  2  2.0  3</span>
+</pre></div>
+</div>
+<p>Operators can also be composed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">),</span> <span class="s1">&#39;j&#39;</span><span class="p">,</span> <span class="n">ar</span><span class="o">.</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[:]</span>
+<span class="go">   i  x  x_1  j</span>
+<span class="go">0  0  0  0.0  1</span>
+<span class="go">1  1  1  1.0  2</span>
+<span class="go">2  2  2  2.0  3</span>
 </pre></div>
 </div>
 <p>Cleanup:</p>
@@ -90,7 +97,7 @@
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>SciDB <code class="docutils literal"><span class="pre">16.9</span></code> with Shim</p>
+<p>SciDB <code class="docutils literal"><span class="pre">16.9</span></code> or newer with Shim</p>
 <p>Python <code class="docutils literal"><span class="pre">2.7.x</span></code>, <code class="docutils literal"><span class="pre">3.4.x</span></code>, <code class="docutils literal"><span class="pre">3.5.x</span></code>, <code class="docutils literal"><span class="pre">3.6.x</span></code> or newer.</p>
 <p>Required Python packages:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">backports</span><span class="o">.</span><span class="n">weakref</span>
@@ -180,7 +187,7 @@ is none is provided.</p>
 library <a class="reference external" href="http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification">SSL Cert Verification</a> section for details on the <code class="docutils literal"><span class="pre">verify</span></code>
 argument. <code class="docutils literal"><span class="pre">verify=False</span></code> disables SSL certificate
 verification. Warnings about the unverified HTTPS requests are
-displayed. The warnings can be disables as well by either setting
+displayed. The warnings can be disabled as well by either setting
 <code class="docutils literal"><span class="pre">PYTHONWARNINGS=&quot;ignore:Unverified</span> <span class="pre">HTTPS</span> <span class="pre">request&quot;</span></code> in the
 environment before starting Python or by doing:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">requests</span>
@@ -236,18 +243,40 @@ called on the <code class="docutils literal"><span class="pre">DB</span></code> 
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="p">)</span>
 <span class="gp">... </span>
-<span class="go">[...&#39;foo&#39;]</span>
+<span class="go">[u&#39;foo&#39;]</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)</span>
 <span class="gp">... </span>
-<span class="go">[...&#39;i&#39;, ...&#39;x&#39;]</span>
+<span class="go">[u&#39;i&#39;, u&#39;x&#39;]</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">[:]</span>
+<span class="go">   i    x</span>
+<span class="go">0  0  0.0</span>
+<span class="go">1  1  1.0</span>
+<span class="go">2  2  2.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">][:]</span>
+<span class="go">   i    x</span>
+<span class="go">0  0  0.0</span>
+<span class="go">1  1  1.0</span>
+<span class="go">2  2  2.0</span>
+</pre></div>
+</div>
+<p>To get the schema of an array, we can use the <code class="docutils literal"><span class="pre">schema</span></code> utility
+function:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">schema</span><span class="p">())</span>
+<span class="go">foo&lt;x:int64&gt; [i=0:2:0:1000000]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
 <span class="gp">... </span>
-<span class="go">array([(0, (255, 0)), (1, (255, 1)), (2, (255, 2))],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+<span class="go">foo&lt;x:int64&gt; [i=0:2:0:1000000]</span>
+<span class="go">  name class   type nullable start end overlap    chunk</span>
+<span class="go">0    x  attr  int64     True</span>
+<span class="go">1    i   dim  int64              0   2       0  1000000</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;remove(foo)&#39;</span><span class="p">)</span>
@@ -264,7 +293,7 @@ called on the <code class="docutils literal"><span class="pre">DB</span></code> 
 <span class="go">bar</span>
 </pre></div>
 </div>
-<p>In IPython, you can use &lt;TAB&gt; for auto-completion of array names,
+<p>In IPython, we can use &lt;TAB&gt; for auto-completion of array names,
 array dimensions, and array attributes:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.&lt;</span><span class="n">TAB</span><span class="o">&gt;</span>
 <span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span>
@@ -280,10 +309,9 @@ operators and macros and makes them available through the <code class="docutils 
 instance:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
 <span class="gp">... </span>
-<span class="go">[...&#39;aggregate&#39;,</span>
-<span class="go"> ...&#39;apply&#39;,</span>
+<span class="go">[u&#39;aggregate&#39;,</span>
 <span class="go"> ...</span>
-<span class="go"> ...&#39;xgrid&#39;]</span>
+<span class="go"> u&#39;xgrid&#39;]</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">apply</span>
@@ -303,7 +331,7 @@ instance:</p>
 <span class="gr">AttributeError</span>: <span class="n">&#39;DB&#39; object has no attribute &#39;missing&#39;</span>
 </pre></div>
 </div>
-<p>In IPython, you can use &lt;TAB&gt; for auto-completion of operator names:</p>
+<p>In IPython, we can use &lt;TAB&gt; for auto-completion of operator names:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">db</span><span class="o">.&lt;</span><span class="n">TAB</span><span class="o">&gt;</span>
 <span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">db</span><span class="o">.</span><span class="n">apply</span>
 </pre></div>
@@ -315,7 +343,7 @@ execute immediately (e.g., <code class="docutils literal"><span class="pre">crea
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">create_array</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;x:int64&gt;[i]&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="p">)</span>
 <span class="gp">... </span>
-<span class="go">[...&#39;foo&#39;]</span>
+<span class="go">[u&#39;foo&#39;]</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)</span>
@@ -348,24 +376,52 @@ SciDB restart without creating a new <code class="docutils literal"><span class=
 <span class="go">False</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal"><span class="pre">cross_join</span></code> operator in SciDB supports aliasing for the array
+arguments, e.g., <code class="docutils literal"><span class="pre">cross_join(left_array</span> <span class="pre">as</span> <span class="pre">left_alias,...</span></code>. Aliasing
+is possible in SciDB-Py using the <code class="docutils literal"><span class="pre">%</span></code> operator:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;store(build(&lt;x:int64&gt;[i=0:1], i), foo)&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">cross_join</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span> <span class="o">%</span> <span class="s1">&#39;f1&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span> <span class="o">%</span> <span class="s1">&#39;f2&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="s1">&#39;f1.i&#39;</span><span class="p">,</span> <span class="s1">&#39;f2.i&#39;</span><span class="p">)[:]</span>
+<span class="go">   i    x  x_1</span>
+<span class="go">0  0  0.0  0.0</span>
+<span class="go">1  1  1.0  1.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To retrieve the schema of a query result, the <code class="docutils literal"><span class="pre">schema</span></code> utility
+function can be used:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int64&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">schema</span><span class="p">())</span>
+<span class="go">build&lt;x:int64&gt; [i=0:2:0:1000000]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int64&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+<span class="gp">... </span>
+<span class="go">build&lt;x:int64&gt; [i=0:2:0:1000000]</span>
+<span class="go">  name class   type nullable start end overlap    chunk</span>
+<span class="go">0    x  attr  int64     True</span>
+<span class="go">1    i   dim  int64              0   2       0  1000000</span>
+</pre></div>
+</div>
 <div class="section" id="download-data-from-scidb">
 <h3>Download Data from SciDB<a class="headerlink" href="#download-data-from-scidb" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int8 not null&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i + 10&#39;</span><span class="p">)[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 10), (1, 11), (2, 12)],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;i1&#39;)])</span>
-</pre></div>
-</div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int8 not null&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i + 10&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">   i   x</span>
 <span class="go">0  0  10</span>
 <span class="go">1  1  11</span>
 <span class="go">2  2  12</span>
 </pre></div>
 </div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int8 not null&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i + 10&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">... </span>
+<span class="go">array([(0, 10), (1, 11), (2, 12)],</span>
+<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;i1&#39;)])</span>
+</pre></div>
+</div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int8 not null&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i + 10&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">atts_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">atts_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">    x</span>
 <span class="go">0  10</span>
 <span class="go">1  11</span>
@@ -373,9 +429,10 @@ SciDB restart without creating a new <code class="docutils literal"><span class=
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int8 not null&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i + 10&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;x - 5&#39;</span><span class="p">)[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 10, 5), (1, 11, 6), (2, 12, 7)],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;i1&#39;), (&#39;y&#39;, &#39;&lt;i8&#39;)])</span>
+<span class="go">   i   x  y</span>
+<span class="go">0  0  10  5</span>
+<span class="go">1  1  11  6</span>
+<span class="go">2  2  12  7</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int8 not null&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i + 10&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
@@ -383,15 +440,17 @@ SciDB restart without creating a new <code class="docutils literal"><span class=
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 10), (1, 11), (2, 12)],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;i1&#39;)])</span>
+<span class="go">   i   x</span>
+<span class="go">0  0  10</span>
+<span class="go">1  1  11</span>
+<span class="go">2  2  12</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 10, 11), (1, 11, 12), (2, 12, 13)],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;i1&#39;), (&#39;y&#39;, &#39;&lt;i8&#39;)])</span>
+<span class="go">   i   x   y</span>
+<span class="go">0  0  10  11</span>
+<span class="go">1  1  11  12</span>
+<span class="go">2  2  12  13</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)</span>
@@ -405,21 +464,11 @@ schema can also be provided. If the resulting array or schema is not
 provided, it can be generated from the upload data or upload
 schema. If the upload format is not provided, it can be constructed
 from the upload schema, upload data, or resulting array schema.</p>
-<p>If an array name is not specified for the <code class="docutils literal"><span class="pre">store</span></code> operator, an array
-name is generated. Arrays with generated names are removed when the
-returned Array object is garbage collected. This behavior can be
-changed by specifying the <code class="docutils literal"><span class="pre">gc=False</span></code> argument to the store operator.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span>
-<span class="gp">... </span>
-<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;py_...&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">ar</span>
-</pre></div>
-</div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;&lt;x:int64&gt;[i]&#39;</span><span class="p">,</span> <span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">))[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, (255, 0)), (1, (255, 1)), (2, (255, 2))],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+<span class="go">   i    x</span>
+<span class="go">0  0  0.0</span>
+<span class="go">1  1  1.0</span>
+<span class="go">2  2  2.0</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;&lt;x:int64&gt;[i]&#39;</span><span class="p">,</span> <span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)</span>
@@ -437,19 +486,24 @@ changed by specifying the <code class="docutils literal"><span class="pre">gc=Fa
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, (255, 0)), (1, (255, 1)), (2, (255, 2)), (3, (255, 3)),</span>
-<span class="go">       (4, (255, 4)), (5, (255, 5))],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+<span class="go">   i    x</span>
+<span class="go">0  0  0.0</span>
+<span class="go">1  1  1.0</span>
+<span class="go">2  2  2.0</span>
+<span class="go">3  3  3.0</span>
+<span class="go">4  4  4.0</span>
+<span class="go">5  5  5.0</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;&lt;i:int64 not null, x:int64&gt;[j]&#39;</span><span class="p">,</span> <span class="n">upload_data</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">[:]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;&lt;i:int64 not null, x:int64&gt;[j]&#39;</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="n">upload_data</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="gp">... </span> <span class="p">)</span><span class="o">.</span><span class="n">redimension</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span>
 <span class="gp">... </span> <span class="p">)</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
 <span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;bar&#39;)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">bar</span><span class="p">[:]</span> <span class="o">==</span> <span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">[:])</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">bar</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">... </span>          <span class="o">==</span> <span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -477,6 +531,26 @@ double-quoted in SciDB-Py. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ar</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;taz&#39;</span><span class="p">]:</span> <span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal"><span class="pre">store</span></code> function accepts a <code class="docutils literal"><span class="pre">temp</span></code> argument as well. If the
+<code class="docutils literal"><span class="pre">temp</span></code> argument is set to <code class="docutils literal"><span class="pre">True</span></code>, a temporary array is created.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int64&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">list</span><span class="p">()[[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;temporary&#39;</span><span class="p">]]</span>
+<span class="go">  name  temporary</span>
+<span class="go">0  foo       True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If an array name is not specified for the <code class="docutils literal"><span class="pre">store</span></code> operator, an array
+name is generated. Arrays with generated names are removed when the
+returned Array object is garbage collected. This behavior can be
+changed by specifying the <code class="docutils literal"><span class="pre">gc=False</span></code> argument to the store operator.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span>
+<span class="gp">... </span>
+<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;py_...&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">ar</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="the-iquery-function">
@@ -491,17 +565,19 @@ literal queries against SciDB:</p>
 <p>The <code class="docutils literal"><span class="pre">iquery</span></code> function can be used to download data from SciDB by
 specifying the <code class="docutils literal"><span class="pre">fetch=True</span></code> argument:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;scan(foo)&#39;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">... </span>
-<span class="go">array([(0, (255, 0)), (1, (255, 1)), (2, (255, 2))],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+<span class="go">   i    x</span>
+<span class="go">0  0  0.0</span>
+<span class="go">1  1  1.0</span>
+<span class="go">2  2  2.0</span>
 </pre></div>
 </div>
 <p>To avoid downloading the dimension information and only download the
 attributes, use the <code class="docutils literal"><span class="pre">atts_only=True</span></code> argument:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;scan(foo)&#39;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">atts_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">... </span>
-<span class="go">array([((255, 0),), ((255, 1),), ((255, 2),)],</span>
-<span class="go">      dtype=[(&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+<span class="go">     x</span>
+<span class="go">0  0.0</span>
+<span class="go">1  1.0</span>
+<span class="go">2  2.0</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;remove(foo)&#39;</span><span class="p">)</span>
@@ -510,25 +586,28 @@ attributes, use the <code class="docutils literal"><span class="pre">atts_only=T
 <p>Download operator output directly:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;build(&lt;x:int64 not null&gt;[i=0:2], i)&#39;</span><span class="p">,</span>
 <span class="gp">... </span>          <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 0), (1, 1), (2, 2)],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;&lt;i8&#39;)])</span>
+<span class="go">   i  x</span>
+<span class="go">0  0  0</span>
+<span class="go">1  1  1</span>
+<span class="go">2  2  2</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;build(&lt;x:int64 not null&gt;[i=0:2], i)&#39;</span><span class="p">,</span>
 <span class="gp">... </span>          <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="gp">... </span>          <span class="n">atts_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">... </span>
-<span class="go">array([(0,), (1,), (2,)],</span>
-<span class="go">      dtype=[(&#39;x&#39;, &#39;&lt;i8&#39;)])</span>
+<span class="go">   x</span>
+<span class="go">0  0</span>
+<span class="go">1  1</span>
+<span class="go">2  2</span>
 </pre></div>
 </div>
 <p>If dimension names collide with attribute names, unique dimension
 names are created:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;apply(build(&lt;x:int64 not null&gt;[i=0:2], i), i, i)&#39;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 0, 0), (1, 1, 1), (2, 2, 2)],</span>
-<span class="go">      dtype=[(&#39;i_1&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;&lt;i8&#39;), (&#39;i&#39;, &#39;&lt;i8&#39;)])</span>
+<span class="go">   i_1  x  i</span>
+<span class="go">0    0  0  0</span>
+<span class="go">1    1  1  1</span>
+<span class="go">2    2  2  2</span>
 </pre></div>
 </div>
 <p>If schema is known, it can be provided to <code class="docutils literal"><span class="pre">iquery</span></code> using the
@@ -542,9 +621,10 @@ schema:</p>
 <span class="gp">... </span>       <span class="n">schema</span><span class="o">=</span><span class="n">Schema</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span>
 <span class="gp">... </span>                     <span class="p">(</span><span class="n">Attribute</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="n">not_null</span><span class="o">=</span><span class="kc">True</span><span class="p">),),</span>
 <span class="gp">... </span>                     <span class="p">(</span><span class="n">Dimension</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),)))</span>
-<span class="gp">... </span>
-<span class="go">array([(0, 0), (1, 1), (2, 2)],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, &#39;&lt;i8&#39;)])</span>
+<span class="go">   i  x</span>
+<span class="go">0  0  0</span>
+<span class="go">1  1  1</span>
+<span class="go">2  2  2</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iquery</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
@@ -553,34 +633,24 @@ schema:</p>
 <span class="gp">... </span>       <span class="n">atts_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="gp">... </span>       <span class="n">schema</span><span class="o">=</span><span class="n">Schema</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="s1">&#39;&lt;x:int64 not null&gt;[i=0:2]&#39;</span><span class="p">))</span>
 <span class="gp">... </span>
-<span class="go">array([(0,), (1,), (2,)],</span>
-<span class="go">      dtype=[(&#39;x&#39;, &#39;&lt;i8&#39;)])</span>
-</pre></div>
-</div>
-<p>Download as Pandas DataFrame:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iquery</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
-<span class="gp">... </span>       <span class="s1">&#39;build(&lt;x:int64&gt;[i=0:2], i)&#39;</span><span class="p">,</span>
-<span class="gp">... </span>       <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>       <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">... </span>
-<span class="go">   i x</span>
-<span class="go">0  0 0.0</span>
-<span class="go">1  1 1.0</span>
-<span class="go">2  2 2.0</span>
-</pre></div>
-</div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iquery</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
-<span class="gp">... </span>       <span class="s1">&#39;build(&lt;x:int64&gt;[i=0:2], i)&#39;</span><span class="p">,</span>
-<span class="gp">... </span>       <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>       <span class="n">atts_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>       <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">... </span>
 <span class="go">   x</span>
-<span class="go">0  0.0</span>
-<span class="go">1  1.0</span>
-<span class="go">2  2.0</span>
+<span class="go">0  0</span>
+<span class="go">1  1</span>
+<span class="go">2  2</span>
 </pre></div>
 </div>
+<p>Attributes with null-able types are promoted as per Pandas ‘promotion
+scheme &lt;<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/gotchas.html">http://pandas.pydata.org/pandas-docs/stable/gotchas.html</a>
+#na-type-promotions&gt;`_ During such promotions, precision loss might
+occur. The user is notified about this via a <code class="docutils literal"><span class="pre">UserWarning</span></code>. If
+desired, such warnings can be disabled as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="ne">UserWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Type promotions can be avoided altogether, by specifying
+<code class="docutils literal"><span class="pre">dataframe_promo</span> <span class="pre">=</span> <span class="pre">False</span></code> in the <code class="docutils literal"><span class="pre">iquery</span></code> arguments. In this case,
+object records will be used instead of atomic values:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iquery</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
 <span class="gp">... </span>       <span class="s1">&#39;build(&lt;x:int64&gt;[i=0:2], i)&#39;</span><span class="p">,</span>
 <span class="gp">... </span>       <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -594,9 +664,40 @@ schema:</p>
 <span class="go">2  (255, 2)</span>
 </pre></div>
 </div>
+<p>Download as NumPy Array:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iquery</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="s1">&#39;build(&lt;x:int64&gt;[i=0:2], i)&#39;</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">... </span>
+<span class="go">array([(0, (255, 0)), (1, (255, 1)), (2, (255, 2))],</span>
+<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+</pre></div>
 </div>
-<div class="section" id="id2">
-<h3>Upload Data to SciDB<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iquery</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="s1">&#39;build(&lt;x:int64&gt;[i=0:2], i)&#39;</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">atts_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">... </span>
+<span class="go">array([((255, 0),), ((255, 1),), ((255, 2),)],</span>
+<span class="go">      dtype=[(&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+</pre></div>
+</div>
+<p>If the <a class="reference external" href="https://github.com/Paradigm4/accelerated_io_tools">accelerated_io_tools</a> SciDB plugin is
+installed and enabled in <a class="reference external" href="https://github.com/Paradigm4/shim">Shim</a>,
+SciDB arrays can be downloaded using the Apache Arrow library:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s1">&#39;scan(foo)&#39;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_arrow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">... </span>
+<span class="go">   i    x</span>
+<span class="go">0  0  0.0</span>
+<span class="go">1  1  1.0</span>
+<span class="go">2  2  2.0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>Upload Data to SciDB<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>Data can be uploaded using the <code class="docutils literal"><span class="pre">iquery</span></code> function by providing an
 <code class="docutils literal"><span class="pre">upload_data</span></code> argument. A file name placeholder needs to be provided
 as part of the SciDB query string. The upload array schema and data
@@ -626,9 +727,10 @@ populate these placeholders.</p>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">[:]</span>
-<span class="gp">... </span>
-<span class="go">array([(0, (255, 0)), (1, (255, 1)), (2, (255, 2))],</span>
-<span class="go">      dtype=[(&#39;i&#39;, &#39;&lt;i8&#39;), (&#39;x&#39;, [(&#39;null&#39;, &#39;u1&#39;), (&#39;val&#39;, &#39;&lt;i8&#39;)])])</span>
+<span class="go">   i    x</span>
+<span class="go">0  0  0.0</span>
+<span class="go">1  1  1.0</span>
+<span class="go">2  2  2.0</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">iquery</span><span class="p">(</span><span class="s2">&quot;insert(input(</span><span class="si">{sch}</span><span class="s2">, &#39;</span><span class="si">{fn}</span><span class="s2">&#39;, 0, &#39;(int64)&#39;), foo)&quot;</span><span class="p">,</span>
@@ -815,7 +917,7 @@ time:</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#the-iquery-function">The iquery Function</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Download Data from SciDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Upload Data to SciDB</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Upload Data to SciDB</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#upload-numpy-arrays">Upload NumPy Arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#upload-binary-data">Upload Binary Data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#upload-data-files">Upload Data Files</a></li>
@@ -833,7 +935,7 @@ time:</p>
 <hr />
 <ul>
     
-    <li class="toctree-l1"><a href="https://paradigm4.atlassian.net/wiki/display/ESD169">SciDB 16.9 Docs</a></li>
+    <li class="toctree-l1"><a href="https://paradigm4.atlassian.net/wiki/spaces/scidb/overview">SciDB 18.1 Docs</a></li>
     
     <li class="toctree-l1"><a href="https://github.com/Paradigm4/SciDB-Py/issues">Bug Reports</a></li>
     
