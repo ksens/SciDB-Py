@@ -578,7 +578,7 @@ schema:
 2  2
 
 
-Attributes with null-able types are promoted as per Pandas 'promotion
+Attributes with null-able types are promoted as per Pandas `promotion
 scheme <http://pandas.pydata.org/pandas-docs/stable/gotchas.html
 #na-type-promotions>`_ During such promotions, precision loss might
 occur. The user is notified about this via a ``UserWarning``. If
