@@ -44,6 +44,18 @@ class Password_Placeholder(object):
         return 'PASSWORD_PROVIDED'
 
 
+def _shim_release_session(scidb_url, http_auth, verify, id):
+    """Make Shim release_session request"""
+    url = requests.compat.urljoin(scidb_url, Shim.release_session.value)
+    req = requests.get(
+        url,
+        params={'id': id},
+        auth=http_auth,
+        verify=verify)
+    req.reason = req.content
+    req.raise_for_status()
+
+
 class DB(object):
     """SciDB Shim connection object.
 
@@ -127,8 +139,11 @@ class DB(object):
             self.scidb_auth = None
 
         finalize(self,
-                 self._shim,
-                 Shim.release_session)
+                 _shim_release_session,
+                 self.scidb_url,
+                 self._http_auth,
+                 self.verify,
+                 self._id)
 
         self.arrays = Arrays(self)
 

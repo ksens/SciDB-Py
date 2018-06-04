@@ -1,3 +1,4 @@
+import gc
 import numpy
 import pandas
 import pytest
@@ -140,6 +141,12 @@ class TestDB:
             schema=schema)
         assert ar.shape == (10, 1)
         assert ar.ndim == 2
+
+    def test_flood(self):
+        for i in range(100):
+            db = connect()
+            del db
+            gc.collect()
 
 
 modes = ('var', 'fix')
