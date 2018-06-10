@@ -743,6 +743,77 @@ library. The data file object is passed directly to the ``requests``
 library which handles the HTTP communication with *Shim*.
 
 
+Joins
+=====
+
+SciDB provides a number of join operators, including ``join``,
+``cross_join``, etc. As with any other operators, these operators can
+be used as literals in the ``DB.iquery`` function or as functions of
+the ``DB`` object. Here are some join examples exposing various
+features of the library:
+
+>>> foo = db.build('<val:double>[i=0:2; j=0:2]', 'i * 3 + j').store('foo')
+
+>>> db.join(foo,
+...         db.build('<val:double>[i=0:2; j=0:5]', '0'))[:]
+   i  j  val  val_1
+0  0  0  0.0    0.0
+1  0  1  1.0    0.0
+2  0  2  2.0    0.0
+3  1  0  3.0    0.0
+4  1  1  4.0    0.0
+5  1  2  5.0    0.0
+6  2  0  6.0    0.0
+7  2  1  7.0    0.0
+8  2  2  8.0    0.0
+
+>>> db.build('<val:double>[i=0:2; j=0:5]', '0'
+...  ).join(db.arrays.foo)[:]
+   i  j  val  val_1
+0  0  0  0.0    0.0
+1  0  1  0.0    1.0
+2  0  2  0.0    2.0
+3  1  0  0.0    3.0
+4  1  1  0.0    4.0
+5  1  2  0.0    5.0
+6  2  0  0.0    6.0
+7  2  1  0.0    7.0
+8  2  2  0.0    8.0
+
+>>> db.cross_join(foo,
+...               db.build('<val:double>[k=0:5]', 'k + 100'),
+...               foo.j, 'k')[:]
+   i  j  val  val_1
+0  0  0  0.0  100.0
+1  0  1  1.0  101.0
+2  0  2  2.0  102.0
+3  1  0  3.0  100.0
+4  1  1  4.0  101.0
+5  1  2  5.0  102.0
+6  2  0  6.0  100.0
+7  2  1  7.0  101.0
+8  2  2  8.0  102.0
+
+>>> bar = db.build('<val:double>[j=0:5]', 'j + 100').store()
+
+>>> db.cross_join(db.arrays.foo % 'left',
+...               bar % 'right',
+...               'left.j', 'right.j')[:]
+   i  j  val  val_1
+0  0  0  0.0  100.0
+1  0  1  1.0  101.0
+2  0  2  2.0  102.0
+3  1  0  3.0  100.0
+4  1  1  4.0  101.0
+5  1  2  5.0  102.0
+6  2  0  6.0  100.0
+7  2  1  7.0  101.0
+8  2  2  8.0  102.0
+
+>>> db.remove(foo)
+>>> db.remove(bar)
+
+
 SciDB Enterprise Edition Features
 =================================
 
