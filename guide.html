@@ -639,9 +639,8 @@ schema:</p>
 <span class="go">2  2</span>
 </pre></div>
 </div>
-<p>Attributes with null-able types are promoted as per Pandas ‘promotion
-scheme &lt;<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/gotchas.html">http://pandas.pydata.org/pandas-docs/stable/gotchas.html</a>
-#na-type-promotions&gt;`_ During such promotions, precision loss might
+<p>Attributes with null-able types are promoted as per Pandas <a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/gotchas.html#na-type-promotions">promotion
+scheme</a> During such promotions, precision loss might
 occur. The user is notified about this via a <code class="docutils literal"><span class="pre">UserWarning</span></code>. If
 desired, such warnings can be disabled as follows:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">warnings</span>
@@ -801,6 +800,82 @@ library which handles the HTTP communication with <em>Shim</em>.</p>
 </div>
 </div>
 </div>
+<div class="section" id="joins">
+<h2>Joins<a class="headerlink" href="#joins" title="Permalink to this headline">¶</a></h2>
+<p>SciDB provides a number of join operators, including <code class="docutils literal"><span class="pre">join</span></code>,
+<code class="docutils literal"><span class="pre">cross_join</span></code>, etc. As with any other operators, these operators can
+be used as literals in the <code class="docutils literal"><span class="pre">DB.iquery</span></code> function or as functions of
+the <code class="docutils literal"><span class="pre">DB</span></code> object. Here are some join examples exposing various
+features of the library:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;val:double&gt;[i=0:2; j=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i * 3 + j&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;val:double&gt;[i=0:2; j=0:5]&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">))[:]</span>
+<span class="go">   i  j  val  val_1</span>
+<span class="go">0  0  0  0.0    0.0</span>
+<span class="go">1  0  1  1.0    0.0</span>
+<span class="go">2  0  2  2.0    0.0</span>
+<span class="go">3  1  0  3.0    0.0</span>
+<span class="go">4  1  1  4.0    0.0</span>
+<span class="go">5  1  2  5.0    0.0</span>
+<span class="go">6  2  0  6.0    0.0</span>
+<span class="go">7  2  1  7.0    0.0</span>
+<span class="go">8  2  2  8.0    0.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;val:double&gt;[i=0:2; j=0:5]&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span>
+<span class="gp">... </span> <span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)[:]</span>
+<span class="go">   i  j  val  val_1</span>
+<span class="go">0  0  0  0.0    0.0</span>
+<span class="go">1  0  1  0.0    1.0</span>
+<span class="go">2  0  2  0.0    2.0</span>
+<span class="go">3  1  0  0.0    3.0</span>
+<span class="go">4  1  1  0.0    4.0</span>
+<span class="go">5  1  2  0.0    5.0</span>
+<span class="go">6  2  0  0.0    6.0</span>
+<span class="go">7  2  1  0.0    7.0</span>
+<span class="go">8  2  2  0.0    8.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">cross_join</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;val:double&gt;[k=0:5]&#39;</span><span class="p">,</span> <span class="s1">&#39;k + 100&#39;</span><span class="p">),</span>
+<span class="gp">... </span>              <span class="n">foo</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)[:]</span>
+<span class="go">   i  j  val  val_1</span>
+<span class="go">0  0  0  0.0  100.0</span>
+<span class="go">1  0  1  1.0  101.0</span>
+<span class="go">2  0  2  2.0  102.0</span>
+<span class="go">3  1  0  3.0  100.0</span>
+<span class="go">4  1  1  4.0  101.0</span>
+<span class="go">5  1  2  5.0  102.0</span>
+<span class="go">6  2  0  6.0  100.0</span>
+<span class="go">7  2  1  7.0  101.0</span>
+<span class="go">8  2  2  8.0  102.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;val:double&gt;[j=0:5]&#39;</span><span class="p">,</span> <span class="s1">&#39;j + 100&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">cross_join</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span> <span class="o">%</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">bar</span> <span class="o">%</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="s1">&#39;left.j&#39;</span><span class="p">,</span> <span class="s1">&#39;right.j&#39;</span><span class="p">)[:]</span>
+<span class="go">   i  j  val  val_1</span>
+<span class="go">0  0  0  0.0  100.0</span>
+<span class="go">1  0  1  1.0  101.0</span>
+<span class="go">2  0  2  2.0  102.0</span>
+<span class="go">3  1  0  3.0  100.0</span>
+<span class="go">4  1  1  4.0  101.0</span>
+<span class="go">5  1  2  5.0  102.0</span>
+<span class="go">6  2  0  6.0  100.0</span>
+<span class="go">7  2  1  7.0  101.0</span>
+<span class="go">8  2  2  8.0  102.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="scidb-enterprise-edition-features">
 <h2>SciDB Enterprise Edition Features<a class="headerlink" href="#scidb-enterprise-edition-features" title="Permalink to this headline">¶</a></h2>
 <p>SciDB Enterprise Edition features can be used directly as any other
@@ -925,6 +1000,7 @@ time:</p>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#joins">Joins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scidb-enterprise-edition-features">SciDB Enterprise Edition Features</a></li>
 </ul>
 </li>

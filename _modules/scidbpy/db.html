@@ -88,6 +88,18 @@
         <span class="k">return</span> <span class="s1">&#39;PASSWORD_PROVIDED&#39;</span>
 
 
+<span class="k">def</span> <span class="nf">_shim_release_session</span><span class="p">(</span><span class="n">scidb_url</span><span class="p">,</span> <span class="n">http_auth</span><span class="p">,</span> <span class="n">verify</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make Shim release_session request&quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">scidb_url</span><span class="p">,</span> <span class="n">Shim</span><span class="o">.</span><span class="n">release_session</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span>
+        <span class="n">auth</span><span class="o">=</span><span class="n">http_auth</span><span class="p">,</span>
+        <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+
 <div class="viewcode-block" id="DB"><a class="viewcode-back" href="../../api.html#scidbpy.db.DB">[docs]</a><span class="k">class</span> <span class="nc">DB</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;SciDB Shim connection object.</span>
 
@@ -171,8 +183,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">scidb_auth</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="bp">self</span><span class="o">.</span><span class="n">_shim</span><span class="p">,</span>
-                 <span class="n">Shim</span><span class="o">.</span><span class="n">release_session</span><span class="p">)</span>
+                 <span class="n">_shim_release_session</span><span class="p">,</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">scidb_url</span><span class="p">,</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">_http_auth</span><span class="p">,</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">arrays</span> <span class="o">=</span> <span class="n">Arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
