@@ -338,7 +338,7 @@ instance:</p>
 </div>
 <p>The operators can be execute immediately or can be lazy and executed
 at a later time. Operators that return arrays are lazy operators (e.g.,
-<code class="docutils literal"><span class="pre">apply</span></code>, <code class="docutils literal"><span class="pre">scan</span></code>, etc.). Operator which do not return arrays
+<code class="docutils literal"><span class="pre">apply</span></code>, <code class="docutils literal"><span class="pre">scan</span></code>, etc.). Operators which do not return arrays
 execute immediately (e.g., <code class="docutils literal"><span class="pre">create_array</span></code>, <code class="docutils literal"><span class="pre">remove</span></code>, etc.).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">create_array</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;x:int64&gt;[i]&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="p">)</span>
