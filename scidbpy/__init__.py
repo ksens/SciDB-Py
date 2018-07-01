@@ -291,7 +291,7 @@ In IPython, we can use <TAB> for auto-completion of operator names::
 
 The operators can be execute immediately or can be lazy and executed
 at a later time. Operators that return arrays are lazy operators (e.g.,
-``apply``, ``scan``, etc.). Operator which do not return arrays
+``apply``, ``scan``, etc.). Operators which do not return arrays
 execute immediately (e.g., ``create_array``, ``remove``, etc.).
 
 >>> db.create_array('foo', '<x:int64>[i]')
