@@ -741,8 +741,7 @@ class Schema(object):
         """Promote nullable attributes in the DataFrame to types which
         support some type of null values as per Pandas 'promotion
         scheme
-        <http://pandas.pydata.org/pandas-docs/stable/gotchas.html
-        #na-type-promotions>`_
+<http://pandas.pydata.org/pandas-docs/stable/gotchas.html#na-type-promotions>`_
 
         """
         self._promo_warning()
