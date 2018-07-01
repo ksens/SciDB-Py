@@ -447,11 +447,22 @@ verify     = {}'''.format(*self)
                 auth=self._http_auth,
                 verify=self.verify)
         else:                        # Get request
-            req = requests.get(
-                url,
-                params=kwargs,
-                auth=self._http_auth,
-                verify=self.verify)
+            try:
+                req = requests.get(
+                    url,
+                    params=kwargs,
+                    auth=self._http_auth,
+                    verify=self.verify)
+            except KeyboardInterrupt as e:
+                if endpoint == Shim.execute_query:
+                    requests.get(
+                        requests.compat.urljoin(
+                            self.scidb_url, Shim.cancel.value),
+                        params={'id': self._id},
+                        auth=self._http_auth,
+                        verify=self.verify)
+                raise e
+
         req.reason = req.content
         req.raise_for_status()
         return req
