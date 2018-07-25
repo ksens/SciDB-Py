@@ -23,7 +23,7 @@ before_install:
     --detach
     --volume /dev/shm
     --tmpfs /dev/shm:exec
-    --volume /tmp/master:/shim
+    --volume /tmp/shim-master:/shim
     --publish 8080:8080
     --publish 8083:8083
     rvernica/scidb:${SCIDB_VER}
