@@ -602,16 +602,16 @@ class TestTypes:
 
         # Values which differ have to be NAN
         ln = ar[4:5]
-        assert numpy.all(
-            pandas.isnull(
-                ln[ar.columns[
-                    (ln.values[0] != types_array_promo[mode][1]).tolist()]]))
+        assert pandas.isnull(
+            ln[ar.columns[
+                (ln.values[0] != types_array_promo[mode][1]
+                ).tolist()]]).all().all()
 
         ln = ar[8:9]
-        assert numpy.all(
-            pandas.isnull(
-                ln[ar.columns[
-                    (ln.values[0] != types_array_promo[mode][2]).tolist()]]))
+        assert pandas.isnull(
+            ln[ar.columns[
+                (ln.values[0] != types_array_promo[mode][2]
+                ).tolist()]]).all().all()
 
     @pytest.mark.parametrize(
         ('mode', 'schema'),
@@ -632,16 +632,16 @@ class TestTypes:
 
         # Values which differ have to be NAN
         ln = ar[4:5]
-        assert numpy.all(
-            pandas.isnull(
+        assert pandas.isnull(
                 ln[ar.columns[
-                    (ln.values != types_array_promo[mode][1][3:])[0]]]))
+                    (ln.values != types_array_promo[mode][1][3:]
+                    )[0]]]).all().all()
 
         ln = ar[8:9]
-        assert numpy.all(
-            pandas.isnull(
-                ln[ar.columns[
-                    (ln.values != types_array_promo[mode][2][3:])[0]]]))
+        assert pandas.isnull(
+            ln[ar.columns[
+                (ln.values != types_array_promo[mode][2][3:]
+                )[0]]]).all().all()
 
     @pytest.mark.parametrize(
         ('mode', 'schema'),
