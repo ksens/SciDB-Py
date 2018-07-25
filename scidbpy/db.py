@@ -60,14 +60,16 @@ class DB(object):
     """SciDB Shim connection object.
 
     >>> DB()
-    DB('http://localhost:8080', None, None, None, None)
+    DB('http://localhost:8080', None, None, False, None, None, False)
 
     >>> print(DB())
     scidb_url  = http://localhost:8080
     scidb_auth = None
     http_auth  = None
+    admin      = False
     namespace  = None
     verify     = None
+    no_ops     = False
 
     Constructor parameters:
 
@@ -83,6 +85,12 @@ class DB(object):
     :param tuple http_auth: Tuple with username and password for
       connecting to Shim, if Shim authentication is used (default
       ``None``)
+
+    :param bool admin: Set to ``true`` to open a higher-priority
+      session. This is identical with the ``--admin`` flag for the
+      ``iquery`` SciDB client, see `SciDB Documentation
+      <https://paradigm4.atlassian.net/wiki/spaces/scidb>`_ for
+      details (default ``False``)
 
     :param string namespace: Initial namespace for the
       connection. Only applicable for SciDB Enterprise Edition. The
@@ -113,6 +121,7 @@ class DB(object):
             scidb_url=None,
             scidb_auth=None,
             http_auth=None,
+            admin=False,
             namespace=None,
             verify=None,
             no_ops=False):
@@ -120,8 +129,10 @@ class DB(object):
             scidb_url = os.getenv('SCIDB_URL', 'http://localhost:8080')
 
         self.scidb_url = scidb_url
+        self.admin = admin
         self.namespace = namespace
         self.verify = verify
+        self.no_ops = no_ops
 
         if http_auth:
             self._http_auth = requests.auth.HTTPDigestAuth(*http_auth)
@@ -129,13 +140,16 @@ class DB(object):
         else:
             self._http_auth = self.http_auth = None
 
+        admin_shim = 1 if self.admin else 0
         if scidb_auth:
             self._id = self._shim(Shim.new_session,
                                   user=scidb_auth[0],
-                                  password=scidb_auth[1]).text
+                                  password=scidb_auth[1],
+                                  admin=admin_shim).text
             self.scidb_auth = (scidb_auth[0], Password_Placeholder())
         else:
-            self._id = self._shim(Shim.new_session).text
+            self._id = self._shim(Shim.new_session,
+                                  admin=admin_shim).text
             self.scidb_auth = None
 
         finalize(self,
@@ -152,7 +166,7 @@ class DB(object):
         self._array_cnt = 0
         self._formatter = string.Formatter()
 
-        if no_ops:
+        if self.no_ops:
             self.operators = None
             self._dir = None
         else:
@@ -163,11 +177,13 @@ class DB(object):
             self.scidb_url,
             self.scidb_auth,
             self.http_auth,
+            self.admin,
             self.namespace,
-            self.verify))
+            self.verify,
+            self.no_ops))
 
     def __repr__(self):
-        return '{}({!r}, {!r}, {!r}, {!r}, {!r})'.format(
+        return '{}({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})'.format(
             type(self).__name__, *self)
 
     def __str__(self):
@@ -175,12 +191,20 @@ class DB(object):
 scidb_url  = {}
 scidb_auth = {}
 http_auth  = {}
+admin      = {}
 namespace  = {}
-verify     = {}'''.format(*self)
+verify     = {}
+no_ops     = {}'''.format(*self)
 
     def __getattr__(self, name):
         if self.operators and name in self.operators:
             return Operator(self, name)
+        elif self.no_ops:
+            raise AttributeError(
+                ("Operators not loaded. Run 'load_ops()' or " +
+                 "use 'no_ops=False' (default) " +
+                 "at connection time (constructor)").format(
+                     type(self)))
         else:
             raise AttributeError(
                 '{.__name__!r} object has no attribute {!r}'.format(
@@ -419,6 +443,7 @@ verify     = {}'''.format(*self)
             save='tsv').content
         macros = self._shim_readlines()
 
+        self.no_ops = False
         self.operators = operators + macros
         self._dir = (self.operators +
                      ['arrays',

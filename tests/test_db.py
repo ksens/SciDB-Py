@@ -3,6 +3,8 @@ import numpy
 import pandas
 import pytest
 import random
+import threading
+import time
 
 from scidbpy.db import Array, connect, iquery
 from scidbpy.schema import Schema
@@ -1172,3 +1174,39 @@ class TestCreate:
         assert type(db.create_array('foo', schema) == Array)
         assert type(db.build(schema_str, 'null').store('foo') == Array)
         db.remove('foo')
+
+
+class TestAdmin:
+
+    def test_admin(self):
+        db_admin = connect(admin=True)
+        assert db_admin.admin is True
+
+        ar = 'test_admin'
+        db_admin.build('<x:double>[i=1:10000;j=1:10000]', 'random()').store(ar)
+
+        st = time.time()
+
+        for _ in range(5):
+            th = threading.Thread(
+                target=lambda: connect(no_ops=True).iquery(
+                    'op_count(sort({}))'.format(ar)))
+            th.start()
+
+        time.sleep(5)
+        que = """project(
+                   filter(
+                     list('queries'),
+                     query_string='op_count(sort({}))'),
+                   query_id)""".format(ar)
+        qids = db_admin.iquery_readlines(que)
+        while qids:
+            for qid in qids:
+                db_admin.cancel(qid)
+            time.sleep(5)
+            qids = db_admin.iquery_readlines(que)
+
+        # Should finish in less then five minutes
+        assert time.time() - st < 5 * 60
+
+        db_admin.remove(ar)

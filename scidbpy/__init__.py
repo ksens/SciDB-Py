@@ -96,14 +96,16 @@ is none is provided.
 Display information about the ``db`` object:
 
 >>> db
-DB('http://localhost:8080', None, None, None, None)
+DB('http://localhost:8080', None, None, False, None, None, False)
 
 >>> print(db)
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+admin      = False
 namespace  = None
 verify     = None
+no_ops     = False
 
 
 Advanced Connection
@@ -114,14 +116,23 @@ Provide `Shim <https://github.com/Paradigm4/shim>`_ credentials:
 >>> db = connect(http_auth=('foo', 'bar'))
 
 >>> db
-DB('http://localhost:8080', None, ('foo', PASSWORD_PROVIDED), None, None)
+... # doctest: +NORMALIZE_WHITESPACE
+DB('http://localhost:8080',
+   None,
+   ('foo', PASSWORD_PROVIDED),
+   False,
+   None,
+   None,
+   False)
 
 >>> print(db)
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = ('foo', PASSWORD_PROVIDED)
+admin      = False
 namespace  = None
 verify     = None
+no_ops     = False
 
 To prompt the user for the password, use:
 
@@ -139,8 +150,10 @@ Use SSL:
 scidb_url  = https://localhost:8083
 scidb_auth = None
 http_auth  = None
+admin      = False
 namespace  = None
 verify     = False
+no_ops     = False
 
 See Python `requests <http://docs.python-requests.org/en/master/>`_
 library `SSL Cert Verification
@@ -166,8 +179,29 @@ Use SSL and SciDB credentials:
 scidb_url  = https://localhost:8083
 scidb_auth = ('foo', PASSWORD_PROVIDED)
 http_auth  = None
+admin      = False
 namespace  = None
 verify     = False
+no_ops     = False
+
+
+When using the ``iquery`` SciDB client, the ``--admin`` flag is
+available for opening a higher-priority session. This flag is also
+available in SciDB-Py and can be set at connection time (see `SciDB
+Documentation <https://paradigm4.atlassian.net/wiki/spaces/scidb>`_
+for details on the effects of the flag). By default this flag is set
+to ``False``:
+
+>>> db_admin = connect(admin=True)
+
+>>> print(db_admin)
+scidb_url  = http://localhost:8080
+scidb_auth = None
+http_auth  = None
+admin      = True
+namespace  = None
+verify     = None
+no_ops     = False
 
 
 By default, the ``connect`` function queries SciDB for the list of
@@ -183,14 +217,15 @@ called on the ``DB`` instance:
 >>> db_no_ops.scan
 Traceback (most recent call last):
     ...
-AttributeError: 'DB' object has no attribute 'scan'
+AttributeError: Operators not loaded. Run 'load_ops()' or use \
+'no_ops=False' (default) at connection time (constructor)
 
 No query has been issued to SciDB yet.
 
 >>> db_no_ops.load_ops()
 >>> db_no_ops.scan
 ... # doctest: +NORMALIZE_WHITESPACE
-Operator(db=DB('http://localhost:8080', None, None, None, None),
+Operator(db=DB('http://localhost:8080', None, None, False, None, None, False),
          name='scan',
          args=[])
 
@@ -272,7 +307,7 @@ instance:
 
 >>> db.apply
 ... # doctest: +NORMALIZE_WHITESPACE
-Operator(db=DB('http://localhost:8080', None, None, None, None),
+Operator(db=DB('http://localhost:8080', None, None, False, None, None, False),
          name='apply',
          args=[])
 
@@ -385,7 +420,7 @@ array([(0, 10), (1, 11), (2, 12)],
 2  2  12  7
 
 >>> db.build('<x:int8 not null>[i=0:2]', 'i + 10').store('foo')
-Array(DB('http://localhost:8080', None, None, None, None), 'foo')
+Array(DB('http://localhost:8080', None, None, False, None, None, False), 'foo')
 
 >>> db.scan(db.arrays.foo)[:]
    i   x
@@ -418,10 +453,10 @@ from the upload schema, upload data, or resulting array schema.
 2  2  2.0
 
 >>> db.input('<x:int64>[i]', upload_data=numpy.arange(3)).store(db.arrays.foo)
-Array(DB('http://localhost:8080', None, None, None, None), 'foo')
+Array(DB('http://localhost:8080', None, None, False, None, None, False), 'foo')
 
 >>> db.load(db.arrays.foo, upload_data=numpy.arange(3))
-Array(DB('http://localhost:8080', None, None, None, None), 'foo')
+Array(DB('http://localhost:8080', None, None, False, None, None, False), 'foo')
 
 >>> db.input('<x:int64>[j]', upload_data=numpy.arange(3, 6)
 ...  ).apply('i', 'j + 3'
@@ -441,7 +476,7 @@ Array(DB('http://localhost:8080', None, None, None, None), 'foo')
 ...          upload_data=db.arrays.foo.fetch(as_dataframe=False)
 ...  ).redimension(db.arrays.foo
 ...  ).store('bar')
-Array(DB('http://localhost:8080', None, None, None, None), 'bar')
+Array(DB('http://localhost:8080', None, None, False, None, None, False), 'bar')
 
 >>> numpy.all(db.arrays.bar.fetch(as_dataframe=False)
 ...           == db.arrays.foo.fetch(as_dataframe=False))
@@ -450,12 +485,12 @@ True
 >>> buf = numpy.array([bytes([10, 20, 30])], dtype='object')
 
 >>> db.input('<b:binary not null>[i]', upload_data=buf).store('taz')
-Array(DB('http://localhost:8080', None, None, None, None), 'taz')
+Array(DB('http://localhost:8080', None, None, False, None, None, False), 'taz')
 
 >>> db.load('taz',
 ...         upload_data=buf,
 ...         upload_schema=Schema.fromstring('<b:binary not null>[i]'))
-Array(DB('http://localhost:8080', None, None, None, None), 'taz')
+Array(DB('http://localhost:8080', None, None, False, None, None, False), 'taz')
 
 For files already available on the server the ``input`` or ``load``
 operators can be invoked with the full set of arguments supported by
@@ -483,8 +518,9 @@ changed by specifying the ``gc=False`` argument to the store operator.
 
 >>> ar = db.input(upload_data=numpy.arange(3)).store()
 >>> ar
-... # doctest: +ELLIPSIS
-Array(DB('http://localhost:8080', None, None, None, None), 'py_...')
+... # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+Array(DB('http://localhost:8080', None, None, False, None, None, False),
+      'py_...')
 >>> del ar
 
 
@@ -829,8 +865,10 @@ namespace will take effect for any subsequent SciDB queries:
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+admin      = False
 namespace  = None
 verify     = None
+no_ops     = False
 
 Notice the ``namespace`` field of the ``DB`` instance.
 
@@ -841,8 +879,10 @@ Notice the ``namespace`` field of the ``DB`` instance.
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+admin      = False
 namespace  = private
 verify     = None
+no_ops     = False
 >>> db.show_namespace()[0]['name']['val']
 ... # doctest: +SKIP
 'private'
@@ -852,8 +892,10 @@ verify     = None
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+admin      = False
 namespace  = public
 verify     = None
+no_ops     = False
 >>> db.show_namespace()[0]['name']['val']
 ... # doctest: +SKIP
 'public'
@@ -870,8 +912,10 @@ time:
 scidb_url  = https://localhost:8083
 scidb_auth = None
 http_auth  = None
+admin      = Flase
 namespace  = public
 verify     = False
+no_ops     = False
 
 """
 
