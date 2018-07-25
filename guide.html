@@ -135,15 +135,17 @@ the complete set of arguments that can be provided to
 is none is provided.</p>
 <p>Display information about the <code class="docutils literal"><span class="pre">db</span></code> object:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span>
-<span class="go">DB(&#39;http://localhost:8080&#39;, None, None, None, None)</span>
+<span class="go">DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
 <span class="go">scidb_url  = http://localhost:8080</span>
 <span class="go">scidb_auth = None</span>
 <span class="go">http_auth  = None</span>
+<span class="go">admin      = False</span>
 <span class="go">namespace  = None</span>
 <span class="go">verify     = None</span>
+<span class="go">no_ops     = False</span>
 </pre></div>
 </div>
 <div class="section" id="advanced-connection">
@@ -153,15 +155,24 @@ is none is provided.</p>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span>
-<span class="go">DB(&#39;http://localhost:8080&#39;, None, (&#39;foo&#39;, PASSWORD_PROVIDED), None, None)</span>
+<span class="gp">... </span>
+<span class="go">DB(&#39;http://localhost:8080&#39;,</span>
+<span class="go">   None,</span>
+<span class="go">   (&#39;foo&#39;, PASSWORD_PROVIDED),</span>
+<span class="go">   False,</span>
+<span class="go">   None,</span>
+<span class="go">   None,</span>
+<span class="go">   False)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
 <span class="go">scidb_url  = http://localhost:8080</span>
 <span class="go">scidb_auth = None</span>
 <span class="go">http_auth  = (&#39;foo&#39;, PASSWORD_PROVIDED)</span>
+<span class="go">admin      = False</span>
 <span class="go">namespace  = None</span>
 <span class="go">verify     = None</span>
+<span class="go">no_ops     = False</span>
 </pre></div>
 </div>
 <p>To prompt the user for the password, use:</p>
@@ -179,8 +190,10 @@ is none is provided.</p>
 <span class="go">scidb_url  = https://localhost:8083</span>
 <span class="go">scidb_auth = None</span>
 <span class="go">http_auth  = None</span>
+<span class="go">admin      = False</span>
 <span class="go">namespace  = None</span>
 <span class="go">verify     = False</span>
+<span class="go">no_ops     = False</span>
 </pre></div>
 </div>
 <p>See Python <a class="reference external" href="http://docs.python-requests.org/en/master/">requests</a>
@@ -204,8 +217,29 @@ environment before starting Python or by doing:</p>
 <span class="go">scidb_url  = https://localhost:8083</span>
 <span class="go">scidb_auth = (&#39;foo&#39;, PASSWORD_PROVIDED)</span>
 <span class="go">http_auth  = None</span>
+<span class="go">admin      = False</span>
 <span class="go">namespace  = None</span>
 <span class="go">verify     = False</span>
+<span class="go">no_ops     = False</span>
+</pre></div>
+</div>
+<p>When using the <code class="docutils literal"><span class="pre">iquery</span></code> SciDB client, the <code class="docutils literal"><span class="pre">--admin</span></code> flag is
+available for opening a higher-priority session. This flag is also
+available in SciDB-Py and can be set at connection time (see <a class="reference external" href="https://paradigm4.atlassian.net/wiki/spaces/scidb">SciDB
+Documentation</a>
+for details on the effects of the flag). By default this flag is set
+to <code class="docutils literal"><span class="pre">False</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db_admin</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">admin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">db_admin</span><span class="p">)</span>
+<span class="go">scidb_url  = http://localhost:8080</span>
+<span class="go">scidb_auth = None</span>
+<span class="go">http_auth  = None</span>
+<span class="go">admin      = True</span>
+<span class="go">namespace  = None</span>
+<span class="go">verify     = None</span>
+<span class="go">no_ops     = False</span>
 </pre></div>
 </div>
 <p>By default, the <code class="docutils literal"><span class="pre">connect</span></code> function queries SciDB for the list of
@@ -220,14 +254,14 @@ called on the <code class="docutils literal"><span class="pre">DB</span></code> 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">db_no_ops</span><span class="o">.</span><span class="n">scan</span>
 <span class="gt">Traceback (most recent call last):</span>
     <span class="o">...</span>
-<span class="gr">AttributeError</span>: <span class="n">&#39;DB&#39; object has no attribute &#39;scan&#39;</span>
+<span class="gr">AttributeError</span>: <span class="n">Operators not loaded. Run &#39;load_ops()&#39; or use &#39;no_ops=False&#39; (default) at connection time (constructor)</span>
 </pre></div>
 </div>
 <p>No query has been issued to SciDB yet.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db_no_ops</span><span class="o">.</span><span class="n">load_ops</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">db_no_ops</span><span class="o">.</span><span class="n">scan</span>
 <span class="gp">... </span>
-<span class="go">Operator(db=DB(&#39;http://localhost:8080&#39;, None, None, None, None),</span>
+<span class="go">Operator(db=DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False),</span>
 <span class="go">         name=&#39;scan&#39;,</span>
 <span class="go">         args=[])</span>
 </pre></div>
@@ -316,7 +350,7 @@ instance:</p>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">apply</span>
 <span class="gp">... </span>
-<span class="go">Operator(db=DB(&#39;http://localhost:8080&#39;, None, None, None, None),</span>
+<span class="go">Operator(db=DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False),</span>
 <span class="go">         name=&#39;apply&#39;,</span>
 <span class="go">         args=[])</span>
 </pre></div>
@@ -436,7 +470,7 @@ function can be used:</p>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s1">&#39;&lt;x:int8 not null&gt;[i=0:2]&#39;</span><span class="p">,</span> <span class="s1">&#39;i + 10&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
-<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;foo&#39;)</span>
+<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False), &#39;foo&#39;)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)[:]</span>
@@ -472,11 +506,11 @@ from the upload schema, upload data, or resulting array schema.</p>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;&lt;x:int64&gt;[i]&#39;</span><span class="p">,</span> <span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">)</span>
-<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;foo&#39;)</span>
+<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False), &#39;foo&#39;)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="p">,</span> <span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;foo&#39;)</span>
+<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False), &#39;foo&#39;)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;&lt;x:int64&gt;[j]&#39;</span><span class="p">,</span> <span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
@@ -499,7 +533,7 @@ from the upload schema, upload data, or resulting array schema.</p>
 <span class="gp">... </span>         <span class="n">upload_data</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="gp">... </span> <span class="p">)</span><span class="o">.</span><span class="n">redimension</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">foo</span>
 <span class="gp">... </span> <span class="p">)</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;bar&#39;)</span>
+<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False), &#39;bar&#39;)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">bar</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -511,13 +545,13 @@ from the upload schema, upload data, or resulting array schema.</p>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;&lt;b:binary not null&gt;[i]&#39;</span><span class="p">,</span> <span class="n">upload_data</span><span class="o">=</span><span class="n">buf</span><span class="p">)</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;taz&#39;</span><span class="p">)</span>
-<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;taz&#39;)</span>
+<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False), &#39;taz&#39;)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;taz&#39;</span><span class="p">,</span>
 <span class="gp">... </span>        <span class="n">upload_data</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span>
 <span class="gp">... </span>        <span class="n">upload_schema</span><span class="o">=</span><span class="n">Schema</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="s1">&#39;&lt;b:binary not null&gt;[i]&#39;</span><span class="p">))</span>
-<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;taz&#39;)</span>
+<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False), &#39;taz&#39;)</span>
 </pre></div>
 </div>
 <p>For files already available on the server the <code class="docutils literal"><span class="pre">input</span></code> or <code class="docutils literal"><span class="pre">load</span></code>
@@ -547,7 +581,8 @@ changed by specifying the <code class="docutils literal"><span class="pre">gc=Fa
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">upload_data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span>
 <span class="gp">... </span>
-<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, None, None), &#39;py_...&#39;)</span>
+<span class="go">Array(DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False),</span>
+<span class="go">      &#39;py_...&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">ar</span>
 </pre></div>
 </div>
@@ -889,8 +924,10 @@ namespace will take effect for any subsequent SciDB queries:</p>
 <span class="go">scidb_url  = http://localhost:8080</span>
 <span class="go">scidb_auth = None</span>
 <span class="go">http_auth  = None</span>
+<span class="go">admin      = False</span>
 <span class="go">namespace  = None</span>
 <span class="go">verify     = None</span>
+<span class="go">no_ops     = False</span>
 </pre></div>
 </div>
 <p>Notice the <code class="docutils literal"><span class="pre">namespace</span></code> field of the <code class="docutils literal"><span class="pre">DB</span></code> instance.</p>
@@ -901,8 +938,10 @@ namespace will take effect for any subsequent SciDB queries:</p>
 <span class="go">scidb_url  = http://localhost:8080</span>
 <span class="go">scidb_auth = None</span>
 <span class="go">http_auth  = None</span>
+<span class="go">admin      = False</span>
 <span class="go">namespace  = private</span>
 <span class="go">verify     = None</span>
+<span class="go">no_ops     = False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">show_namespace</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">][</span><span class="s1">&#39;val&#39;</span><span class="p">]</span>
 <span class="gp">... </span>
 <span class="go">&#39;private&#39;</span>
@@ -913,8 +952,10 @@ namespace will take effect for any subsequent SciDB queries:</p>
 <span class="go">scidb_url  = http://localhost:8080</span>
 <span class="go">scidb_auth = None</span>
 <span class="go">http_auth  = None</span>
+<span class="go">admin      = False</span>
 <span class="go">namespace  = public</span>
 <span class="go">verify     = None</span>
+<span class="go">no_ops     = False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">show_namespace</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">][</span><span class="s1">&#39;val&#39;</span><span class="p">]</span>
 <span class="gp">... </span>
 <span class="go">&#39;public&#39;</span>
@@ -931,8 +972,10 @@ time:</p>
 <span class="go">scidb_url  = https://localhost:8083</span>
 <span class="go">scidb_auth = None</span>
 <span class="go">http_auth  = None</span>
+<span class="go">admin      = Flase</span>
 <span class="go">namespace  = public</span>
 <span class="go">verify     = False</span>
+<span class="go">no_ops     = False</span>
 </pre></div>
 </div>
 </div>

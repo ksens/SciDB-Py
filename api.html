@@ -74,18 +74,20 @@ operator, if available.</p>
 
 <dl class="class">
 <dt id="scidbpy.db.DB">
-<em class="property">class </em><code class="descclassname">scidbpy.db.</code><code class="descname">DB</code><span class="sig-paren">(</span><em>scidb_url=None</em>, <em>scidb_auth=None</em>, <em>http_auth=None</em>, <em>namespace=None</em>, <em>verify=None</em>, <em>no_ops=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/db.html#DB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.db.DB" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">scidbpy.db.</code><code class="descname">DB</code><span class="sig-paren">(</span><em>scidb_url=None</em>, <em>scidb_auth=None</em>, <em>http_auth=None</em>, <em>admin=False</em>, <em>namespace=None</em>, <em>verify=None</em>, <em>no_ops=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scidbpy/db.html#DB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scidbpy.db.DB" title="Permalink to this definition">¶</a></dt>
 <dd><p>SciDB Shim connection object.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DB</span><span class="p">()</span>
-<span class="go">DB(&#39;http://localhost:8080&#39;, None, None, None, None)</span>
+<span class="go">DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">DB</span><span class="p">())</span>
 <span class="go">scidb_url  = http://localhost:8080</span>
 <span class="go">scidb_auth = None</span>
 <span class="go">http_auth  = None</span>
+<span class="go">admin      = False</span>
 <span class="go">namespace  = None</span>
 <span class="go">verify     = None</span>
+<span class="go">no_ops     = False</span>
 </pre></div>
 </div>
 <p>Constructor parameters:</p>
@@ -104,6 +106,10 @@ connecting to SciDB, if password authentication method is used
 <li><strong>http_auth</strong> (<em>tuple</em>) – Tuple with username and password for
 connecting to Shim, if Shim authentication is used (default
 <code class="docutils literal"><span class="pre">None</span></code>)</li>
+<li><strong>admin</strong> (<em>bool</em>) – Set to <code class="docutils literal"><span class="pre">true</span></code> to open a higher-priority
+session. This is identical with the <code class="docutils literal"><span class="pre">--admin</span></code> flag for the
+<code class="docutils literal"><span class="pre">iquery</span></code> SciDB client, see <a class="reference external" href="https://paradigm4.atlassian.net/wiki/spaces/scidb">SciDB Documentation</a> for
+details (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
 <li><strong>namespace</strong> (<em>string</em>) – Initial namespace for the
 connection. Only applicable for SciDB Enterprise Edition. The
 namespace can changed at any time using the <code class="docutils literal"><span class="pre">set_namespace</span></code>

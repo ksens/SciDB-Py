@@ -104,14 +104,16 @@
     <span class="sd">&quot;&quot;&quot;SciDB Shim connection object.</span>
 
 <span class="sd">    &gt;&gt;&gt; DB()</span>
-<span class="sd">    DB(&#39;http://localhost:8080&#39;, None, None, None, None)</span>
+<span class="sd">    DB(&#39;http://localhost:8080&#39;, None, None, False, None, None, False)</span>
 
 <span class="sd">    &gt;&gt;&gt; print(DB())</span>
 <span class="sd">    scidb_url  = http://localhost:8080</span>
 <span class="sd">    scidb_auth = None</span>
 <span class="sd">    http_auth  = None</span>
+<span class="sd">    admin      = False</span>
 <span class="sd">    namespace  = None</span>
 <span class="sd">    verify     = None</span>
+<span class="sd">    no_ops     = False</span>
 
 <span class="sd">    Constructor parameters:</span>
 
@@ -127,6 +129,12 @@
 <span class="sd">    :param tuple http_auth: Tuple with username and password for</span>
 <span class="sd">      connecting to Shim, if Shim authentication is used (default</span>
 <span class="sd">      ``None``)</span>
+
+<span class="sd">    :param bool admin: Set to ``true`` to open a higher-priority</span>
+<span class="sd">      session. This is identical with the ``--admin`` flag for the</span>
+<span class="sd">      ``iquery`` SciDB client, see `SciDB Documentation</span>
+<span class="sd">      &lt;https://paradigm4.atlassian.net/wiki/spaces/scidb&gt;`_ for</span>
+<span class="sd">      details (default ``False``)</span>
 
 <span class="sd">    :param string namespace: Initial namespace for the</span>
 <span class="sd">      connection. Only applicable for SciDB Enterprise Edition. The</span>
@@ -157,6 +165,7 @@
             <span class="n">scidb_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">scidb_auth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">http_auth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">admin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">verify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">no_ops</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -164,8 +173,10 @@
             <span class="n">scidb_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;SCIDB_URL&#39;</span><span class="p">,</span> <span class="s1">&#39;http://localhost:8080&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scidb_url</span> <span class="o">=</span> <span class="n">scidb_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">admin</span> <span class="o">=</span> <span class="n">admin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">=</span> <span class="n">namespace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verify</span> <span class="o">=</span> <span class="n">verify</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_ops</span> <span class="o">=</span> <span class="n">no_ops</span>
 
         <span class="k">if</span> <span class="n">http_auth</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_http_auth</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">HTTPDigestAuth</span><span class="p">(</span><span class="o">*</span><span class="n">http_auth</span><span class="p">)</span>
@@ -173,13 +184,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_http_auth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_auth</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="n">admin_shim</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">admin</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">scidb_auth</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shim</span><span class="p">(</span><span class="n">Shim</span><span class="o">.</span><span class="n">new_session</span><span class="p">,</span>
                                   <span class="n">user</span><span class="o">=</span><span class="n">scidb_auth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                  <span class="n">password</span><span class="o">=</span><span class="n">scidb_auth</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">text</span>
+                                  <span class="n">password</span><span class="o">=</span><span class="n">scidb_auth</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                  <span class="n">admin</span><span class="o">=</span><span class="n">admin_shim</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scidb_auth</span> <span class="o">=</span> <span class="p">(</span><span class="n">scidb_auth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Password_Placeholder</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shim</span><span class="p">(</span><span class="n">Shim</span><span class="o">.</span><span class="n">new_session</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shim</span><span class="p">(</span><span class="n">Shim</span><span class="o">.</span><span class="n">new_session</span><span class="p">,</span>
+                                  <span class="n">admin</span><span class="o">=</span><span class="n">admin_shim</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scidb_auth</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -196,7 +210,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_array_cnt</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_formatter</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">Formatter</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">no_ops</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_ops</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">operators</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dir</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
@@ -207,11 +221,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">scidb_url</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scidb_auth</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">http_auth</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">admin</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_ops</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(</span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(</span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -219,12 +235,20 @@
 <span class="s1">scidb_url  = </span><span class="si">{}</span><span class="s1"></span>
 <span class="s1">scidb_auth = </span><span class="si">{}</span><span class="s1"></span>
 <span class="s1">http_auth  = </span><span class="si">{}</span><span class="s1"></span>
+<span class="s1">admin      = </span><span class="si">{}</span><span class="s1"></span>
 <span class="s1">namespace  = </span><span class="si">{}</span><span class="s1"></span>
-<span class="s1">verify     = </span><span class="si">{}</span><span class="s1">&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="p">)</span>
+<span class="s1">verify     = </span><span class="si">{}</span><span class="s1"></span>
+<span class="s1">no_ops     = </span><span class="si">{}</span><span class="s1">&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operators</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operators</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_ops</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;Operators not loaded. Run &#39;load_ops()&#39; or &quot;</span> <span class="o">+</span>
+                 <span class="s2">&quot;use &#39;no_ops=False&#39; (default) &quot;</span> <span class="o">+</span>
+                 <span class="s2">&quot;at connection time (constructor)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                     <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
                 <span class="s1">&#39;{.__name__!r} object has no attribute </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -463,6 +487,7 @@
             <span class="n">save</span><span class="o">=</span><span class="s1">&#39;tsv&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
         <span class="n">macros</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shim_readlines</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_ops</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">operators</span> <span class="o">=</span> <span class="n">operators</span> <span class="o">+</span> <span class="n">macros</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dir</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operators</span> <span class="o">+</span>
                      <span class="p">[</span><span class="s1">&#39;arrays&#39;</span><span class="p">,</span>
