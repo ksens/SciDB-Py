@@ -143,15 +143,19 @@ disallows for calling the SciDB operators directly from the
 <code class="docutils literal"><span class="pre">False</span></code>)</li>
 <li><strong>use_arrow</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, download SciDB array using
 Apache Arrow library. Requires <code class="docutils literal"><span class="pre">accelerated_io_tools</span></code> and
-<code class="docutils literal"><span class="pre">aio</span></code> enabled in <code class="docutils literal"><span class="pre">Shim</span></code>. (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
+<code class="docutils literal"><span class="pre">aio</span></code> enabled in <code class="docutils literal"><span class="pre">Shim</span></code>. If <code class="docutils literal"><span class="pre">True</span></code>, a Pandas DataFrame
+is returned (<code class="docutils literal"><span class="pre">as_dataframe</span></code> has no effect) and null-able
+types are promoted as per Pandas <a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/gotchas.html#na-type-promotions">promotion scheme</a> (<code class="docutils literal"><span class="pre">dataframe_promo</span></code> has no effect)
+(default <code class="docutils literal"><span class="pre">False</span></code>)</li>
 <li><strong>atts_only</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, download only SciDB array
 attributes without dimensions (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
 <li><strong>as_dataframe</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, return a Pandas
 DataFrame. If <code class="docutils literal"><span class="pre">False</span></code>, return a NumPy array (default
 <code class="docutils literal"><span class="pre">True</span></code>)</li>
-<li><strong>dataframe_promo</strong> (<em>bool</em>) – If <code class="docutils literal"><span class="pre">True</span></code>, null-able types are
+<li><strong>dataframe_promo</strong> (<em>bool</em>) – <p>If <code class="docutils literal"><span class="pre">True</span></code>, null-able types are
 promoted as per Pandas <a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/gotchas.html#na-type-promotions">promotion scheme</a> If <code class="docutils literal"><span class="pre">False</span></code>, object records are used
-for null-able types (default <code class="docutils literal"><span class="pre">True</span></code>)</li>
+for null-able types (default <code class="docutils literal"><span class="pre">True</span></code>)</p>
+</li>
 <li><strong>schema</strong> – Schema of the SciDB array to use when
 downloading the array. Schema is not verified. If schema is
 a Schema instance, it is copied. Otherwise, a

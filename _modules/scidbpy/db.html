@@ -276,7 +276,12 @@
 
 <span class="sd">        :param bool use_arrow: If ``True``, download SciDB array using</span>
 <span class="sd">          Apache Arrow library. Requires ``accelerated_io_tools`` and</span>
-<span class="sd">          ``aio`` enabled in ``Shim``. (default ``False``)</span>
+<span class="sd">          ``aio`` enabled in ``Shim``. If ``True``, a Pandas DataFrame</span>
+<span class="sd">          is returned (``as_dataframe`` has no effect) and null-able</span>
+<span class="sd">          types are promoted as per Pandas `promotion scheme</span>
+<span class="sd">          &lt;http://pandas.pydata.org/pandas-docs/stable/gotchas.html</span>
+<span class="sd">          #na-type-promotions&gt;`_ (``dataframe_promo`` has no effect)</span>
+<span class="sd">          (default ``False``)</span>
 
 <span class="sd">        :param bool atts_only: If ``True``, download only SciDB array</span>
 <span class="sd">          attributes without dimensions (default ``False``)</span>
@@ -372,7 +377,7 @@
             <span class="k">if</span> <span class="n">schema</span><span class="p">:</span>
                 <span class="c1"># Deep-copy schema since we might be mutating it</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Schema</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">atts_only</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">atts_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_arrow</span><span class="p">:</span>
                         <span class="n">schema</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">schema</span> <span class="o">=</span> <span class="n">Schema</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
@@ -393,7 +398,7 @@
             <span class="c1"># between dimensions and attributes. So, we use</span>
             <span class="c1"># make_unique only if there are collisions within the</span>
             <span class="c1"># attribute names.</span>
-            <span class="k">if</span> <span class="p">((</span><span class="ow">not</span> <span class="n">atts_only</span> <span class="ow">or</span>
+            <span class="k">if</span> <span class="p">((</span><span class="ow">not</span> <span class="n">atts_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_arrow</span> <span class="ow">or</span>
                  <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">atts</span><span class="p">)))</span> <span class="o">&lt;</span>
                  <span class="nb">len</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">atts</span><span class="p">))</span> <span class="ow">and</span> <span class="n">schema</span><span class="o">.</span><span class="n">make_unique</span><span class="p">()):</span>
                 <span class="c1"># Dimensions or attributes were renamed due to</span>
@@ -401,7 +406,7 @@
                 <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;cast(</span><span class="si">{}</span><span class="s1">, {:h})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
             <span class="c1"># Unpack</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">atts_only</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">atts_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_arrow</span><span class="p">:</span>
                 <span class="c1"># apply: add dimensions as attributes</span>
                 <span class="c1"># project: place dimensions first</span>
                 <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;project(apply(</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">), </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -416,13 +421,19 @@
             <span class="c1"># Execute Query and Download content</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_shim</span><span class="p">(</span><span class="n">Shim</span><span class="o">.</span><span class="n">execute_query</span><span class="p">,</span>
                        <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
-                       <span class="n">save</span><span class="o">=</span><span class="s1">&#39;arrow&#39;</span> <span class="k">if</span> <span class="n">use_arrow</span> <span class="k">else</span> <span class="n">schema</span><span class="o">.</span><span class="n">atts_fmt_scidb</span><span class="p">)</span>
+                       <span class="n">save</span><span class="o">=</span><span class="s1">&#39;arrow&#39;</span> <span class="k">if</span> <span class="n">use_arrow</span> <span class="k">else</span> <span class="n">schema</span><span class="o">.</span><span class="n">atts_fmt_scidb</span><span class="p">,</span>
+                       <span class="n">atts_only</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <span class="n">atts_only</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">use_arrow</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shim</span><span class="p">(</span><span class="n">Shim</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
 
             <span class="c1"># Build result</span>
             <span class="k">if</span> <span class="n">use_arrow</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">pyarrow</span><span class="o">.</span><span class="n">RecordBatchStreamReader</span><span class="p">(</span>
                     <span class="n">pyarrow</span><span class="o">.</span><span class="n">BufferReader</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span><span class="o">.</span><span class="n">read_pandas</span><span class="p">()</span>
+                <span class="c1"># Place dimensions first</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">atts_only</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                        <span class="n">schema</span><span class="o">.</span><span class="n">dims</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">atts</span><span class="p">)]]</span>
+
             <span class="k">elif</span> <span class="n">schema</span><span class="o">.</span><span class="n">is_fixsize</span><span class="p">():</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">atts_dtype</span><span class="p">)</span>
 
