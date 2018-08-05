@@ -328,7 +328,7 @@ no_ops     = {}'''.format(*self)
             if schema:
                 # Deep-copy schema since we might be mutating it
                 if isinstance(schema, Schema):
-                    if not atts_only:
+                    if not atts_only and not use_arrow:
                         schema = copy.deepcopy(schema)
                 else:
                     schema = Schema.fromstring(schema)
@@ -349,7 +349,7 @@ no_ops     = {}'''.format(*self)
             # between dimensions and attributes. So, we use
             # make_unique only if there are collisions within the
             # attribute names.
-            if ((not atts_only or
+            if ((not atts_only and not use_arrow or
                  len(set((a.name for a in schema.atts))) <
                  len(schema.atts)) and schema.make_unique()):
                 # Dimensions or attributes were renamed due to
@@ -357,7 +357,7 @@ no_ops     = {}'''.format(*self)
                 query = 'cast({}, {:h})'.format(query, schema)
 
             # Unpack
-            if not atts_only:
+            if not atts_only and not use_arrow:
                 # apply: add dimensions as attributes
                 # project: place dimensions first
                 query = 'project(apply({}, {}), {})'.format(
@@ -372,13 +372,19 @@ no_ops     = {}'''.format(*self)
             # Execute Query and Download content
             self._shim(Shim.execute_query,
                        query=query,
-                       save='arrow' if use_arrow else schema.atts_fmt_scidb)
+                       save='arrow' if use_arrow else schema.atts_fmt_scidb,
+                       atts_only=1 if atts_only or not use_arrow else 0)
             buf = self._shim(Shim.read_bytes, n=0).content
 
             # Build result
             if use_arrow:
                 data = pyarrow.RecordBatchStreamReader(
                     pyarrow.BufferReader(buf)).read_pandas()
+                # Place dimensions first
+                if not atts_only:
+                    data = data[[i.name for i in itertools.chain(
+                        schema.dims, schema.atts)]]
+
             elif schema.is_fixsize():
                 data = numpy.frombuffer(buf, dtype=schema.atts_dtype)
 
