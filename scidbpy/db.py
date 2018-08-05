@@ -232,7 +232,12 @@ no_ops     = {}'''.format(*self)
 
         :param bool use_arrow: If ``True``, download SciDB array using
           Apache Arrow library. Requires ``accelerated_io_tools`` and
-          ``aio`` enabled in ``Shim``. (default ``False``)
+          ``aio`` enabled in ``Shim``. If ``True``, a Pandas DataFrame
+          is returned (``as_dataframe`` has no effect) and null-able
+          types are promoted as per Pandas `promotion scheme
+          <http://pandas.pydata.org/pandas-docs/stable/gotchas.html
+          #na-type-promotions>`_ (``dataframe_promo`` has no effect)
+          (default ``False``)
 
         :param bool atts_only: If ``True``, download only SciDB array
           attributes without dimensions (default ``False``)
