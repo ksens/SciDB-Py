@@ -3,6 +3,7 @@ import numpy
 import pandas
 import pytest
 import random
+import requests
 import threading
 import time
 
@@ -1206,7 +1207,11 @@ class TestAdmin:
         qids = db_admin.iquery_readlines(que)
         while qids:
             for qid in qids:
-                db_admin.cancel(qid)
+                try:
+                    db_admin.cancel(qid)
+                except requests.HTTPError as e:
+                    if e.response.status_code != 406:
+                        raise e
             time.sleep(5)
             qids = db_admin.iquery_readlines(que)
 
