@@ -40,7 +40,7 @@ install:
 
 script:
   - pycodestyle .
-  - pytest
+  - pytest -v
   - pip install .
 
 after_failure:
