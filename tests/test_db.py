@@ -1187,7 +1187,7 @@ class TestAdmin:
         assert db_admin.admin is True
 
         ar = 'test_admin'
-        db_admin.build('<x:double>[i=1:10000;j=1:10000]', 'random()').store(ar)
+        db_admin.build('<x:double>[i=1:1000;j=1:1000]', 'random()').store(ar)
 
         st = time.time()
 
