@@ -373,7 +373,7 @@ no_ops     = {}'''.format(*self)
             # between dimensions and attributes. So, we use
             # make_unique only if there are collisions within the
             # attribute names.
-            if ((not atts_only and not use_arrow or
+            if ((not atts_only or
                  len(set((a.name for a in schema.atts))) <
                  len(schema.atts)) and schema.make_unique()):
                 # Dimensions or attributes were renamed due to
