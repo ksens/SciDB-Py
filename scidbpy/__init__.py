@@ -96,15 +96,16 @@ is none is provided.
 Display information about the ``db`` object:
 
 >>> db
-DB('http://localhost:8080', None, None, False, None, None, False)
+DB('http://localhost:8080', None, None, None, False, None, False, False)
 
 >>> print(db)
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+verify     = None
 admin      = False
 namespace  = None
-verify     = None
+use_arrow  = False
 no_ops     = False
 
 
@@ -120,18 +121,20 @@ Provide `Shim <https://github.com/Paradigm4/shim>`_ credentials:
 DB('http://localhost:8080',
    None,
    ('foo', PASSWORD_PROVIDED),
+   None,
    False,
    None,
-   None,
+   False,
    False)
 
 >>> print(db)
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = ('foo', PASSWORD_PROVIDED)
+verify     = None
 admin      = False
 namespace  = None
-verify     = None
+use_arrow  = False
 no_ops     = False
 
 To prompt the user for the password, use:
@@ -150,9 +153,10 @@ Use SSL:
 scidb_url  = https://localhost:8083
 scidb_auth = None
 http_auth  = None
+verify     = False
 admin      = False
 namespace  = None
-verify     = False
+use_arrow  = False
 no_ops     = False
 
 See Python `requests <http://docs.python-requests.org/en/master/>`_
@@ -179,9 +183,10 @@ Use SSL and SciDB credentials:
 scidb_url  = https://localhost:8083
 scidb_auth = ('foo', PASSWORD_PROVIDED)
 http_auth  = None
+verify     = False
 admin      = False
 namespace  = None
-verify     = False
+use_arrow  = False
 no_ops     = False
 
 
@@ -198,9 +203,10 @@ to ``False``:
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+verify     = None
 admin      = True
 namespace  = None
-verify     = None
+use_arrow  = False
 no_ops     = False
 
 
@@ -225,7 +231,14 @@ No query has been issued to SciDB yet.
 >>> db_no_ops.load_ops()
 >>> db_no_ops.scan
 ... # doctest: +NORMALIZE_WHITESPACE
-Operator(db=DB('http://localhost:8080', None, None, False, None, None, False),
+Operator(db=DB('http://localhost:8080',
+               None,
+               None,
+               None,
+               False,
+               None,
+               False,
+               False),
          name='scan',
          args=[])
 
@@ -307,7 +320,14 @@ instance:
 
 >>> db.apply
 ... # doctest: +NORMALIZE_WHITESPACE
-Operator(db=DB('http://localhost:8080', None, None, False, None, None, False),
+Operator(db=DB('http://localhost:8080',
+               None,
+               None,
+               None,
+               False,
+               None,
+               False,
+               False),
          name='apply',
          args=[])
 
@@ -420,7 +440,16 @@ array([(0, 10), (1, 11), (2, 12)],
 2  2  12  7
 
 >>> db.build('<x:int8 not null>[i=0:2]', 'i + 10').store('foo')
-Array(DB('http://localhost:8080', None, None, False, None, None, False), 'foo')
+... # doctest: +NORMALIZE_WHITESPACE
+Array(DB('http://localhost:8080',
+         None,
+         None,
+         None,
+         False,
+         None,
+         False,
+         False),
+      'foo')
 
 >>> db.scan(db.arrays.foo)[:]
    i   x
@@ -453,10 +482,28 @@ from the upload schema, upload data, or resulting array schema.
 2  2  2.0
 
 >>> db.input('<x:int64>[i]', upload_data=numpy.arange(3)).store(db.arrays.foo)
-Array(DB('http://localhost:8080', None, None, False, None, None, False), 'foo')
+... # doctest: +NORMALIZE_WHITESPACE
+Array(DB('http://localhost:8080',
+         None,
+         None,
+         None,
+         False,
+         None,
+         False,
+         False),
+      'foo')
 
 >>> db.load(db.arrays.foo, upload_data=numpy.arange(3))
-Array(DB('http://localhost:8080', None, None, False, None, None, False), 'foo')
+... # doctest: +NORMALIZE_WHITESPACE
+Array(DB('http://localhost:8080',
+         None,
+         None,
+         None,
+         False,
+         None,
+         False,
+         False),
+      'foo')
 
 >>> db.input('<x:int64>[j]', upload_data=numpy.arange(3, 6)
 ...  ).apply('i', 'j + 3'
@@ -476,7 +523,16 @@ Array(DB('http://localhost:8080', None, None, False, None, None, False), 'foo')
 ...          upload_data=db.arrays.foo.fetch(as_dataframe=False)
 ...  ).redimension(db.arrays.foo
 ...  ).store('bar')
-Array(DB('http://localhost:8080', None, None, False, None, None, False), 'bar')
+... # doctest: +NORMALIZE_WHITESPACE
+Array(DB('http://localhost:8080',
+         None,
+         None,
+         None,
+         False,
+         None,
+         False,
+         False),
+      'bar')
 
 >>> numpy.all(db.arrays.bar.fetch(as_dataframe=False)
 ...           == db.arrays.foo.fetch(as_dataframe=False))
@@ -485,12 +541,30 @@ True
 >>> buf = numpy.array([bytes([10, 20, 30])], dtype='object')
 
 >>> db.input('<b:binary not null>[i]', upload_data=buf).store('taz')
-Array(DB('http://localhost:8080', None, None, False, None, None, False), 'taz')
+... # doctest: +NORMALIZE_WHITESPACE
+Array(DB('http://localhost:8080',
+         None,
+         None,
+         None,
+         False,
+         None,
+         False,
+         False),
+      'taz')
 
 >>> db.load('taz',
 ...         upload_data=buf,
 ...         upload_schema=Schema.fromstring('<b:binary not null>[i]'))
-Array(DB('http://localhost:8080', None, None, False, None, None, False), 'taz')
+... # doctest: +NORMALIZE_WHITESPACE
+Array(DB('http://localhost:8080',
+         None,
+         None,
+         None,
+         False,
+         None,
+         False,
+         False),
+      'taz')
 
 For files already available on the server the ``input`` or ``load``
 operators can be invoked with the full set of arguments supported by
@@ -519,7 +593,14 @@ changed by specifying the ``gc=False`` argument to the store operator.
 >>> ar = db.input(upload_data=numpy.arange(3)).store()
 >>> ar
 ... # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-Array(DB('http://localhost:8080', None, None, False, None, None, False),
+Array(DB('http://localhost:8080',
+         None,
+         None,
+         None,
+         False,
+         None,
+         False,
+         False),
       'py_...')
 >>> del ar
 
@@ -666,6 +747,20 @@ installed and enabled in `Shim <https://github.com/Paradigm4/shim>`_,
 SciDB arrays can be downloaded using the Apache Arrow library:
 
 >>> db.iquery('scan(foo)', fetch=True, use_arrow=True)
+... # doctest: +SKIP
+   i    x
+0  0  0.0
+1  1  1.0
+2  2  2.0
+
+
+By default, Apache Arrow is not used. If desired, ``use_arrow`` can be
+set to ``True`` at connection time (it is ``False`` by default). Once
+set at connection time, this value is used for any subsequent
+``iquery`` calls if not overwritten:
+
+>>> db_arrow = connect(use_arrow=True)
+>>> db_arrow.iquery('scan(foo)', fetch=True)
 ... # doctest: +SKIP
    i    x
 0  0  0.0
@@ -865,9 +960,10 @@ namespace will take effect for any subsequent SciDB queries:
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+verify     = None
 admin      = False
 namespace  = None
-verify     = None
+use_arrow  = False
 no_ops     = False
 
 Notice the ``namespace`` field of the ``DB`` instance.
@@ -879,9 +975,10 @@ Notice the ``namespace`` field of the ``DB`` instance.
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+verify     = None
 admin      = False
 namespace  = private
-verify     = None
+use_arrow  = False
 no_ops     = False
 >>> db.show_namespace()[0]['name']['val']
 ... # doctest: +SKIP
@@ -892,9 +989,10 @@ no_ops     = False
 scidb_url  = http://localhost:8080
 scidb_auth = None
 http_auth  = None
+verify     = None
 admin      = False
 namespace  = public
-verify     = None
+use_arrow  = False
 no_ops     = False
 >>> db.show_namespace()[0]['name']['val']
 ... # doctest: +SKIP
@@ -912,9 +1010,10 @@ time:
 scidb_url  = https://localhost:8083
 scidb_auth = None
 http_auth  = None
+verify     = False
 admin      = Flase
 namespace  = public
-verify     = False
+use_arrow  = False
 no_ops     = False
 
 """

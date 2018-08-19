@@ -60,15 +60,16 @@ class DB(object):
     """SciDB Shim connection object.
 
     >>> DB()
-    DB('http://localhost:8080', None, None, False, None, None, False)
+    DB('http://localhost:8080', None, None, None, False, None, False, False)
 
     >>> print(DB())
     scidb_url  = http://localhost:8080
     scidb_auth = None
     http_auth  = None
+    verify     = None
     admin      = False
     namespace  = None
-    verify     = None
+    use_arrow  = False
     no_ops     = False
 
     Constructor parameters:
@@ -86,6 +87,15 @@ class DB(object):
       connecting to Shim, if Shim authentication is used (default
       ``None``)
 
+    :param bool verify: If ``False``, HTTPS certificates are not
+      verified. This value is passed to the Python ``requests``
+      library. See Python `requests
+      <http://docs.python-requests.org/en/master/>`_ library `SSL Cert
+      Verification
+      <http://docs.python-requests.org/en/master/user/advanced/
+      #ssl-cert-verification>`_ section for details on the ``verify``
+      argument (default ``None``)
+
     :param bool admin: Set to ``true`` to open a higher-priority
       session. This is identical with the ``--admin`` flag for the
       ``iquery`` SciDB client, see `SciDB Documentation
@@ -97,14 +107,14 @@ class DB(object):
       namespace can changed at any time using the ``set_namespace``
       SciDB operator (default ``None``)
 
-    :param bool verify: If ``False``, HTTPS certificates are not
-      verified. This value is passed to the Python ``requests``
-      library. See Python `requests
-      <http://docs.python-requests.org/en/master/>`_ library `SSL Cert
-      Verification
-      <http://docs.python-requests.org/en/master/user/advanced/
-      #ssl-cert-verification>`_ section for details on the ``verify``
-      argument (default ``None``)
+    :param bool use_arrow: If ``True``, download SciDB array using
+      Apache Arrow library. Requires ``accelerated_io_tools`` and
+      ``aio`` enabled in ``Shim``. If ``True``, a Pandas DataFrame is
+      returned (``as_dataframe`` has no effect) and null-able types
+      are promoted as per Pandas `promotion scheme
+      <http://pandas.pydata.org/pandas-docs/stable/gotchas.html
+      #na-type-promotions>`_ (``dataframe_promo`` has no effect). It
+      can be overriden for each ``iquery`` call (default ``False``)
 
     :param bool no_ops: If ``True``, the list of operators is not
       fetched at this time and the connection is not implicitly
@@ -121,17 +131,19 @@ class DB(object):
             scidb_url=None,
             scidb_auth=None,
             http_auth=None,
+            verify=None,
             admin=False,
             namespace=None,
-            verify=None,
+            use_arrow=False,
             no_ops=False):
         if scidb_url is None:
             scidb_url = os.getenv('SCIDB_URL', 'http://localhost:8080')
 
         self.scidb_url = scidb_url
+        self.verify = verify
         self.admin = admin
         self.namespace = namespace
-        self.verify = verify
+        self.use_arrow = use_arrow
         self.no_ops = no_ops
 
         if http_auth:
@@ -177,13 +189,14 @@ class DB(object):
             self.scidb_url,
             self.scidb_auth,
             self.http_auth,
+            self.verify,
             self.admin,
             self.namespace,
-            self.verify,
+            self.use_arrow,
             self.no_ops))
 
     def __repr__(self):
-        return '{}({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})'.format(
+        return '{}({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})'.format(
             type(self).__name__, *self)
 
     def __str__(self):
@@ -191,9 +204,10 @@ class DB(object):
 scidb_url  = {}
 scidb_auth = {}
 http_auth  = {}
+verify     = {}
 admin      = {}
 namespace  = {}
-verify     = {}
+use_arrow  = {}
 no_ops     = {}'''.format(*self)
 
     def __getattr__(self, name):
@@ -216,7 +230,7 @@ no_ops     = {}'''.format(*self)
     def iquery(self,
                query,
                fetch=False,
-               use_arrow=False,
+               use_arrow=None,
                atts_only=False,
                as_dataframe=True,
                dataframe_promo=True,
@@ -236,8 +250,9 @@ no_ops     = {}'''.format(*self)
           is returned (``as_dataframe`` has no effect) and null-able
           types are promoted as per Pandas `promotion scheme
           <http://pandas.pydata.org/pandas-docs/stable/gotchas.html
-          #na-type-promotions>`_ (``dataframe_promo`` has no effect)
-          (default ``False``)
+          #na-type-promotions>`_ (``dataframe_promo`` has no
+          effect). If ``None`` the ``use_arrow`` value set at
+          connection time is used (default ``None``)
 
         :param bool atts_only: If ``True``, download only SciDB array
           attributes without dimensions (default ``False``)
@@ -274,6 +289,10 @@ no_ops     = {}'''.format(*self)
         2  2  5
 
         """
+        # Set use_arrow using local/global
+        if use_arrow is None:
+            use_arrow = self.use_arrow
+
         # Special case: -- - set_namespace - --
         if query.startswith('set_namespace(') and query[-1] == ')':
             param = query[len('set_namespace('):-1]
