@@ -1210,7 +1210,10 @@ class TestAdmin:
                 try:
                     db_admin.cancel(qid)
                 except requests.HTTPError as e:
-                    if e.response.status_code != 406:
+                    if e.response.status_code == 502:
+                        db_admin = connect(admin=True)
+                        break
+                    elif e.response.status_code != 406:
                         raise e
             time.sleep(5)
             qids = db_admin.iquery_readlines(que)
