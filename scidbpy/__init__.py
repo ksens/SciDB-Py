@@ -1021,4 +1021,4 @@ no_ops     = False
 from .db import connect, iquery, Array
 from .schema import Attribute, Dimension, Schema
 
-__version__ = '18.1.3'
+__version__ = '18.1.4'
