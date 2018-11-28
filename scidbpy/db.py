@@ -397,6 +397,7 @@ no_ops     = {}'''.format(*self)
             self._shim(Shim.execute_query,
                        query=query,
                        save='arrow' if use_arrow else schema.atts_fmt_scidb,
+                       limit='256',
                        atts_only=1 if atts_only or not use_arrow else 0)
             buf = self._shim(Shim.read_bytes, n=0).content
 
