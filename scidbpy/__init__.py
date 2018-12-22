@@ -96,7 +96,7 @@ is none is provided.
 Display information about the ``db`` object:
 
 >>> db
-DB('http://localhost:8080', None, None, None, False, None, False, False)
+DB('http://localhost:8080', None, None, None, False, None, False, 256, False)
 
 >>> print(db)
 scidb_url  = http://localhost:8080
@@ -106,6 +106,7 @@ verify     = None
 admin      = False
 namespace  = None
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 
 
@@ -125,6 +126,7 @@ DB('http://localhost:8080',
    False,
    None,
    False,
+   256,
    False)
 
 >>> print(db)
@@ -135,6 +137,7 @@ verify     = None
 admin      = False
 namespace  = None
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 
 To prompt the user for the password, use:
@@ -157,6 +160,7 @@ verify     = False
 admin      = False
 namespace  = None
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 
 See Python `requests <http://docs.python-requests.org/en/master/>`_
@@ -187,6 +191,7 @@ verify     = False
 admin      = False
 namespace  = None
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 
 
@@ -207,6 +212,7 @@ verify     = None
 admin      = True
 namespace  = None
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 
 
@@ -238,6 +244,7 @@ Operator(db=DB('http://localhost:8080',
                False,
                None,
                False,
+               256,
                False),
          name='scan',
          args=[])
@@ -327,6 +334,7 @@ Operator(db=DB('http://localhost:8080',
                False,
                None,
                False,
+               256,
                False),
          name='apply',
          args=[])
@@ -448,6 +456,7 @@ Array(DB('http://localhost:8080',
          False,
          None,
          False,
+         256,
          False),
       'foo')
 
@@ -490,6 +499,7 @@ Array(DB('http://localhost:8080',
          False,
          None,
          False,
+         256,
          False),
       'foo')
 
@@ -502,6 +512,7 @@ Array(DB('http://localhost:8080',
          False,
          None,
          False,
+         256,
          False),
       'foo')
 
@@ -531,6 +542,7 @@ Array(DB('http://localhost:8080',
          False,
          None,
          False,
+         256,
          False),
       'bar')
 
@@ -549,6 +561,7 @@ Array(DB('http://localhost:8080',
          False,
          None,
          False,
+         256,
          False),
       'taz')
 
@@ -563,6 +576,7 @@ Array(DB('http://localhost:8080',
          False,
          None,
          False,
+         256,
          False),
       'taz')
 
@@ -600,6 +614,7 @@ Array(DB('http://localhost:8080',
          False,
          None,
          False,
+         256,
          False),
       'py_...')
 >>> del ar
@@ -964,6 +979,7 @@ verify     = None
 admin      = False
 namespace  = None
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 
 Notice the ``namespace`` field of the ``DB`` instance.
@@ -979,6 +995,7 @@ verify     = None
 admin      = False
 namespace  = private
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 >>> db.show_namespace()[0]['name']['val']
 ... # doctest: +SKIP
@@ -993,6 +1010,7 @@ verify     = None
 admin      = False
 namespace  = public
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 >>> db.show_namespace()[0]['name']['val']
 ... # doctest: +SKIP
@@ -1014,6 +1032,7 @@ verify     = False
 admin      = Flase
 namespace  = public
 use_arrow  = False
+file_limit = 256
 no_ops     = False
 
 """

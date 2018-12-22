@@ -151,6 +151,23 @@ class TestDB:
             del db
             gc.collect()
 
+    def test_file_limit(self):
+        db = connect()
+        assert db.file_limit == 256
+        db.build('<x:int64>[i=1:1000; j=1:1000]', 'i')[:]
+
+        db.file_limit = 1
+        assert db.file_limit == 1
+        with pytest.raises(requests.exceptions.HTTPError) as exc:
+            db.build('<x:int64>[i=1:1000; j=1:1000]', 'i')[:]
+        assert 'SCIDB_LE_FILE_WRITE_ERROR' in str(exc.value)
+
+        db = connect(file_limit=1)
+        assert db.file_limit == 1
+        with pytest.raises(requests.exceptions.HTTPError) as exc:
+            db.build('<x:int64>[i=1:1000; j=1:1000]', 'i')[:]
+        assert 'SCIDB_LE_FILE_WRITE_ERROR' in str(exc.value)
+
 
 modes = ('var', 'fix')
 

@@ -60,7 +60,16 @@ class DB(object):
     """SciDB Shim connection object.
 
     >>> DB()
-    DB('http://localhost:8080', None, None, None, False, None, False, False)
+    ... # doctest: +NORMALIZE_WHITESPACE
+    DB('http://localhost:8080',
+       None,
+       None,
+       None,
+       False,
+       None,
+       False,
+       256,
+       False)
 
     >>> print(DB())
     scidb_url  = http://localhost:8080
@@ -70,6 +79,7 @@ class DB(object):
     admin      = False
     namespace  = None
     use_arrow  = False
+    file_limit = 256
     no_ops     = False
 
     Constructor parameters:
@@ -96,7 +106,7 @@ class DB(object):
       #ssl-cert-verification>`_ section for details on the ``verify``
       argument (default ``None``)
 
-    :param bool admin: Set to ``true`` to open a higher-priority
+    :param bool admin: Set to ``True`` to open a higher-priority
       session. This is identical with the ``--admin`` flag for the
       ``iquery`` SciDB client, see `SciDB Documentation
       <https://paradigm4.atlassian.net/wiki/spaces/scidb>`_ for
@@ -115,6 +125,11 @@ class DB(object):
       <http://pandas.pydata.org/pandas-docs/stable/gotchas.html
       #na-type-promotions>`_ (``dataframe_promo`` has no effect). It
       can be overriden for each ``iquery`` call (default ``False``)
+
+    :param int file_limit: absolute limit of the output file in
+      Megabytes. Effective only when the `accelerated_io_tools`
+      plug-in is installed in SciDB and `aio` is enabled in Shim
+      (default `256` MB)
 
     :param bool no_ops: If ``True``, the list of operators is not
       fetched at this time and the connection is not implicitly
@@ -135,6 +150,7 @@ class DB(object):
             admin=False,
             namespace=None,
             use_arrow=False,
+            file_limit=256,
             no_ops=False):
         if scidb_url is None:
             scidb_url = os.getenv('SCIDB_URL', 'http://localhost:8080')
@@ -144,6 +160,7 @@ class DB(object):
         self.admin = admin
         self.namespace = namespace
         self.use_arrow = use_arrow
+        self.file_limit = file_limit
         self.no_ops = no_ops
 
         if http_auth:
@@ -193,10 +210,19 @@ class DB(object):
             self.admin,
             self.namespace,
             self.use_arrow,
+            self.file_limit,
             self.no_ops))
 
     def __repr__(self):
-        return '{}({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})'.format(
+        return ('{}({!r}, ' +
+                '{!r}, ' +
+                '{!r}, ' +
+                '{!r}, ' +
+                '{!r}, ' +
+                '{!r}, ' +
+                '{!r}, ' +
+                '{!r}, ' +
+                '{!r})').format(
             type(self).__name__, *self)
 
     def __str__(self):
@@ -208,6 +234,7 @@ verify     = {}
 admin      = {}
 namespace  = {}
 use_arrow  = {}
+file_limit = {}
 no_ops     = {}'''.format(*self)
 
     def __getattr__(self, name):
@@ -397,7 +424,7 @@ no_ops     = {}'''.format(*self)
             self._shim(Shim.execute_query,
                        query=query,
                        save='arrow' if use_arrow else schema.atts_fmt_scidb,
-                       limit='256',
+                       limit=self.file_limit,
                        atts_only=1 if atts_only or not use_arrow else 0)
             buf = self._shim(Shim.read_bytes, n=0).content
 
@@ -489,6 +516,9 @@ no_ops     = {}'''.format(*self)
 
         if endpoint != Shim.new_session:
             kwargs.update(id=self._id)
+
+        if self.use_arrow and endpoint == Shim.execute_query:
+            kwargs['limit'] = self.file_limit
 
         # Add prefix to request, if necessary
         if self.namespace and endpoint == Shim.execute_query:
