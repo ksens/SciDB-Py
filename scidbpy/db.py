@@ -72,15 +72,15 @@ class DB(object):
        False)
 
     >>> print(DB())
-    scidb_url  = http://localhost:8080
-    scidb_auth = None
-    http_auth  = None
-    verify     = None
-    admin      = False
-    namespace  = None
-    use_arrow  = False
-    file_limit = 256
-    no_ops     = False
+    scidb_url         = http://localhost:8080
+    scidb_auth        = None
+    http_auth         = None
+    verify            = None
+    admin             = False
+    namespace         = None
+    use_arrow         = False
+    result_size_limit = 256
+    no_ops            = False
 
     Constructor parameters:
 
@@ -126,7 +126,7 @@ class DB(object):
       #na-type-promotions>`_ (``dataframe_promo`` has no effect). It
       can be overriden for each ``iquery`` call (default ``False``)
 
-    :param int file_limit: absolute limit of the output file in
+    :param int result_size_limit: absolute limit of the output file in
       Megabytes. Effective only when the `accelerated_io_tools`
       plug-in is installed in SciDB and `aio` is enabled in Shim
       (default `256` MB)
@@ -150,7 +150,7 @@ class DB(object):
             admin=False,
             namespace=None,
             use_arrow=False,
-            file_limit=256,
+            result_size_limit=256,
             no_ops=False):
         if scidb_url is None:
             scidb_url = os.getenv('SCIDB_URL', 'http://localhost:8080')
@@ -160,7 +160,7 @@ class DB(object):
         self.admin = admin
         self.namespace = namespace
         self.use_arrow = use_arrow
-        self.file_limit = file_limit
+        self.result_size_limit = result_size_limit
         self.no_ops = no_ops
 
         if http_auth:
@@ -210,7 +210,7 @@ class DB(object):
             self.admin,
             self.namespace,
             self.use_arrow,
-            self.file_limit,
+            self.result_size_limit,
             self.no_ops))
 
     def __repr__(self):
@@ -227,15 +227,15 @@ class DB(object):
 
     def __str__(self):
         return '''\
-scidb_url  = {}
-scidb_auth = {}
-http_auth  = {}
-verify     = {}
-admin      = {}
-namespace  = {}
-use_arrow  = {}
-file_limit = {}
-no_ops     = {}'''.format(*self)
+scidb_url         = {}
+scidb_auth        = {}
+http_auth         = {}
+verify            = {}
+admin             = {}
+namespace         = {}
+use_arrow         = {}
+result_size_limit = {}
+no_ops            = {}'''.format(*self)
 
     def __getattr__(self, name):
         if self.operators and name in self.operators:
@@ -424,7 +424,7 @@ no_ops     = {}'''.format(*self)
             self._shim(Shim.execute_query,
                        query=query,
                        save='arrow' if use_arrow else schema.atts_fmt_scidb,
-                       limit=self.file_limit,
+                       result_size_limit=self.result_size_limit,
                        atts_only=1 if atts_only or not use_arrow else 0)
             buf = self._shim(Shim.read_bytes, n=0).content
 
@@ -518,7 +518,7 @@ no_ops     = {}'''.format(*self)
             kwargs.update(id=self._id)
 
         if self.use_arrow and endpoint == Shim.execute_query:
-            kwargs['limit'] = self.file_limit
+            kwargs['result_size_limit'] = self.result_size_limit
 
         # Add prefix to request, if necessary
         if self.namespace and endpoint == Shim.execute_query:

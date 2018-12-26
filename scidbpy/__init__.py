@@ -99,15 +99,15 @@ Display information about the ``db`` object:
 DB('http://localhost:8080', None, None, None, False, None, False, 256, False)
 
 >>> print(db)
-scidb_url  = http://localhost:8080
-scidb_auth = None
-http_auth  = None
-verify     = None
-admin      = False
-namespace  = None
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = http://localhost:8080
+scidb_auth        = None
+http_auth         = None
+verify            = None
+admin             = False
+namespace         = None
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 
 
 Advanced Connection
@@ -130,15 +130,15 @@ DB('http://localhost:8080',
    False)
 
 >>> print(db)
-scidb_url  = http://localhost:8080
-scidb_auth = None
-http_auth  = ('foo', PASSWORD_PROVIDED)
-verify     = None
-admin      = False
-namespace  = None
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = http://localhost:8080
+scidb_auth        = None
+http_auth         = ('foo', PASSWORD_PROVIDED)
+verify            = None
+admin             = False
+namespace         = None
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 
 To prompt the user for the password, use:
 
@@ -153,15 +153,15 @@ Use SSL:
 >>> db_ssl = connect('https://localhost:8083', verify=False)
 
 >>> print(db_ssl)
-scidb_url  = https://localhost:8083
-scidb_auth = None
-http_auth  = None
-verify     = False
-admin      = False
-namespace  = None
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = https://localhost:8083
+scidb_auth        = None
+http_auth         = None
+verify            = False
+admin             = False
+namespace         = None
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 
 See Python `requests <http://docs.python-requests.org/en/master/>`_
 library `SSL Cert Verification
@@ -184,15 +184,15 @@ Use SSL and SciDB credentials:
 ...   'https://localhost:8083', scidb_auth=('foo', 'bar'), verify=False)
 
 >>> print(db_ssl)
-scidb_url  = https://localhost:8083
-scidb_auth = ('foo', PASSWORD_PROVIDED)
-http_auth  = None
-verify     = False
-admin      = False
-namespace  = None
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = https://localhost:8083
+scidb_auth        = ('foo', PASSWORD_PROVIDED)
+http_auth         = None
+verify            = False
+admin             = False
+namespace         = None
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 
 
 When using the ``iquery`` SciDB client, the ``--admin`` flag is
@@ -205,15 +205,15 @@ to ``False``:
 >>> db_admin = connect(admin=True)
 
 >>> print(db_admin)
-scidb_url  = http://localhost:8080
-scidb_auth = None
-http_auth  = None
-verify     = None
-admin      = True
-namespace  = None
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = http://localhost:8080
+scidb_auth        = None
+http_auth         = None
+verify            = None
+admin             = True
+namespace         = None
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 
 
 By default, the ``connect`` function queries SciDB for the list of
@@ -972,15 +972,15 @@ function. No immediate query is executed in SciDB, but the new
 namespace will take effect for any subsequent SciDB queries:
 
 >>> print(db)
-scidb_url  = http://localhost:8080
-scidb_auth = None
-http_auth  = None
-verify     = None
-admin      = False
-namespace  = None
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = http://localhost:8080
+scidb_auth        = None
+http_auth         = None
+verify            = None
+admin             = False
+namespace         = None
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 
 Notice the ``namespace`` field of the ``DB`` instance.
 
@@ -988,30 +988,30 @@ Notice the ``namespace`` field of the ``DB`` instance.
 ... # doctest: +SKIP
 >>> print(db)
 ... # doctest: +SKIP
-scidb_url  = http://localhost:8080
-scidb_auth = None
-http_auth  = None
-verify     = None
-admin      = False
-namespace  = private
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = http://localhost:8080
+scidb_auth        = None
+http_auth         = None
+verify            = None
+admin             = False
+namespace         = private
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 >>> db.show_namespace()[0]['name']['val']
 ... # doctest: +SKIP
 'private'
 
 >>> db.iquery("set_namespace('public')")
 >>> print(db)
-scidb_url  = http://localhost:8080
-scidb_auth = None
-http_auth  = None
-verify     = None
-admin      = False
-namespace  = public
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = http://localhost:8080
+scidb_auth        = None
+http_auth         = None
+verify            = None
+admin             = False
+namespace         = public
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 >>> db.show_namespace()[0]['name']['val']
 ... # doctest: +SKIP
 'public'
@@ -1025,15 +1025,15 @@ time:
 ... # doctest: +SKIP
 >>> print(db_ssl)
 ... # doctest: +SKIP
-scidb_url  = https://localhost:8083
-scidb_auth = None
-http_auth  = None
-verify     = False
-admin      = Flase
-namespace  = public
-use_arrow  = False
-file_limit = 256
-no_ops     = False
+scidb_url         = https://localhost:8083
+scidb_auth        = None
+http_auth         = None
+verify            = False
+admin             = Flase
+namespace         = public
+use_arrow         = False
+result_size_limit = 256
+no_ops            = False
 
 """
 
