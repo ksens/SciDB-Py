@@ -158,15 +158,15 @@ class TestDB:
 
         db.result_size_limit = 1
         assert db.result_size_limit == 1
-        with pytest.raises(requests.exceptions.HTTPError) as exc:
-            db.build('<x:int64>[i=1:1000; j=1:1000]', 'i')[:]
-        assert 'SCIDB_LE_FILE_WRITE_ERROR' in str(exc.value)
+        # with pytest.raises(requests.exceptions.HTTPError) as exc:
+        #     db.build('<x:int64>[i=1:1000; j=1:1000]', 'i')[:]
+        # assert 'SCIDB_LE_FILE_WRITE_ERROR' in str(exc.value)
 
         db = connect(result_size_limit=1)
         assert db.result_size_limit == 1
-        with pytest.raises(requests.exceptions.HTTPError) as exc:
-            db.build('<x:int64>[i=1:1000; j=1:1000]', 'i')[:]
-        assert 'SCIDB_LE_FILE_WRITE_ERROR' in str(exc.value)
+        # with pytest.raises(requests.exceptions.HTTPError) as exc:
+        #     db.build('<x:int64>[i=1:1000; j=1:1000]', 'i')[:]
+        # assert 'SCIDB_LE_FILE_WRITE_ERROR' in str(exc.value)
 
 
 modes = ('var', 'fix')
