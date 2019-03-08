@@ -54,6 +54,7 @@ Required Python packages::
   enum34
   numpy
   pandas
+  pyarrow==0.9.0
   requests
   six
 
