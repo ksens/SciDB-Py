@@ -544,7 +544,7 @@ class Schema(object):
         '\\s*  < ( [^,>]+  \\s* (?: , \\s* [^,>]+  \\s* )* )  >', re.VERBOSE)
 
     _regex_dims = re.compile(
-        '\\s* \\[ ( [^;\\]]+ \\s* (?: ; \\s* [^;\\]]+ \\s* )* ) \\] \\s* $',
+        '\\s* \\[ ( [^;\\]]+ \\s* (?: ; \\s* [^;\\]]+ \\s* )* ) \\] \\s*',
         re.VERBOSE)
 
     def __init__(self, name=None, atts=(), dims=()):
