@@ -321,7 +321,7 @@ instance:
 
 >>> dir(db)
 ... # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS +ALLOW_UNICODE
-[u'aggregate',
+[u'add_attributes',
  ...
  u'xgrid']
 
