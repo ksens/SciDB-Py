@@ -615,7 +615,7 @@ class Array(object):
     def __dir__(self):
         """Download the schema of the SciDB array, using ``show()``"""
         sh = Schema.fromstring(
-            self.db.iquery_readlines('show({})'.format(self))[0])
+            self.db.iquery_readlines('show({})'.format(self))[0][0])
         ls = [i.name for i in itertools.chain(sh.atts, sh.dims)]
         ls.sort()
         return ls
@@ -647,7 +647,7 @@ class Array(object):
 
     def schema(self):
         return Schema.fromstring(
-            self.db.iquery_readlines("show({})".format(self))[0])
+            self.db.iquery_readlines("show({})".format(self))[0][0])
 
 
 class ArrayExp(object):
@@ -809,7 +809,7 @@ class Operator(object):
                     new_schema = Schema.fromstring(
                         self.db.iquery_readlines(
                             "show('{}', 'afl')".format(
-                                str(self.args[0]).replace("'", "\\'")))[0])
+                                str(self.args[0]).replace("'", "\\'")))[0][0])
                 except requests.HTTPError as e:
                     e.args = (
                         '"temp=True" not supported for complex queries\n' +
@@ -879,7 +879,7 @@ class Operator(object):
         if self.is_lazy:
             return Schema.fromstring(
                 self.db.iquery_readlines(
-                    "show('{}', 'afl')".format(self))[0])
+                    "show('{}', 'afl')".format(self))[0][0])
 
 
 connect = DB
