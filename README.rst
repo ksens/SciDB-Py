@@ -58,7 +58,7 @@ Required Python packages::
   enum34
   numpy
   pandas
-  pyarrow (see version requirements in `setup.py`<setup.py>)
+  pyarrow (see version requirements in setup.py)
   requests
   six
 
