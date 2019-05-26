@@ -50,7 +50,7 @@ Requirements
 
 SciDB ``16.9`` or newer with Shim
 
-Python ``2.7.x``, ``3.4.x``, ``3.5.x``, ``3.6.x`` or newer.
+Python ``2.7.x``, ``3.4.x``, ``3.5.x``, ``3.6.x``, ``3.7.x``, or newer.
 
 Required Python packages::
 
@@ -58,7 +58,7 @@ Required Python packages::
   enum34
   numpy
   pandas
-  pyarrow==0.9.0
+  pyarrow (see version requirements in [setup.py](setup.py))
   requests
   six
 
