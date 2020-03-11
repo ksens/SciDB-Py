@@ -511,6 +511,19 @@ no_ops            = {}'''.format(*self)
                       'upload'])
         self._dir.sort()
 
+    def _cleanup(self, endpoint):
+        """Attempt to cleanup in case of user interruption or error. Send a
+           cancel request to the query associated with the current
+           session
+
+        """
+        if endpoint == Shim.execute_query:
+            requests.get(
+                requests.compat.urljoin(self.scidb_url, Shim.cancel.value),
+                params={'id': self._id},
+                auth=self._http_auth,
+                verify=self.verify)
+
     def _shim(self, endpoint, **kwargs):
         """Make request on Shim endpoint"""
 
@@ -540,17 +553,15 @@ no_ops            = {}'''.format(*self)
                     auth=self._http_auth,
                     verify=self.verify)
             except KeyboardInterrupt as e:
-                if endpoint == Shim.execute_query:
-                    requests.get(
-                        requests.compat.urljoin(
-                            self.scidb_url, Shim.cancel.value),
-                        params={'id': self._id},
-                        auth=self._http_auth,
-                        verify=self.verify)
+                self._cleanup(endpoint)
                 raise e
 
         req.reason = req.content
-        req.raise_for_status()
+        try:
+            req.raise_for_status()
+        except Exception as e:
+            self._cleanup(endpoint)
+            raise e
         return req
 
     def _shim_readlines(self):
